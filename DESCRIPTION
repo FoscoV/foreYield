@@ -1,0 +1,9 @@
+Package: foreYield
+Type: Package
+Title: forecasting yield result
+Version: 1.0
+Date: 2017-01-25
+Author: Fosco Vesely
+Maintainer: Fosco Vesely <fosco@tana.it>
+Description: Using past yield and model predictors, forecast the yield resulting for the current (the last) year (simulated year). Nothing new but the interface "virgilio()" providing easy use without any (almost) knowledge of R
+License: Development stage, no licensing anybody to anything

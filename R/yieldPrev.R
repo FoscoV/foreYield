@@ -230,7 +230,7 @@ cutTrend<-function(inizio,fine){
 	if(any(names(yieldPrev) == "breakPoint")) yieldPrev$breakPoint<-rbind(yieldPrev$breakPoint,c(inizio,fine,as.numeric(flatLin$coefficients[2]))) else yieldPrev$breakPoint<- data.frame(begin=inizio,finish=fine,trend=as.numeric(flatLin$coefficients[2]))
 
 	#now we have to grant no more safeTrend will influence further trends!
-	rm(yieldPrev$safeTrend)#<== HERE IT HANGS! :(
+	yieldPrev$safeTrend<- NULL
 
 
 	#meet flatYield and preflat (now postFlat,but...by the way, i like that name!)

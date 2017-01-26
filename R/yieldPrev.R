@@ -176,7 +176,9 @@ sewTrends<-function(inizio,fine){
 		#allow some sewing with Mates (in case which)
 		cat(c("\n Does any of the predictors explain some of the Official's Trend? \n If yes, point which one(s) by ID (multiple answers allowed) \n If none of them does, return blank: \n"),fill=TRUE)
 		mateList<-scan(,nmax=length(trendMates[,1]))
-		if(length(mateList >= 1)){yieldPrev$safeTrend <- mean(trendMates$trendCoef[mateList])}
+		if(length(mateList >= 1)){
+			yieldPrev$safeTrend <- mean(trendMates$trendCoef[c(mateList)])
+		}
 		cutTrend(inizio,fine)
 	}
 }
@@ -228,7 +230,7 @@ cutTrend<-function(inizio,fine){
 	if(any(names(yieldPrev) == "breakPoint")) yieldPrev$breakPoint<-rbind(yieldPrev$breakPoint,c(inizio,fine,as.numeric(flatLin$coefficients[2]))) else yieldPrev$breakPoint<- data.frame(begin=inizio,finish=fine,trend=as.numeric(flatLin$coefficients[2]))
 
 	#now we have to grant no more safeTrend will influence further trends!
-	rm(yieldPrev$safeTrend)
+	rm(yieldPrev$safeTrend)#<== HERE IT HANGS! :(
 
 
 	#meet flatYield and preflat (now postFlat,but...by the way, i like that name!)

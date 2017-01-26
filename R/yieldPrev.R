@@ -1,3 +1,7 @@
+	if(any(ls() == "yieldPrev")){}else{
+	yieldPrev <-new.env()
+	yieldPrev$.conflicts.OK<-c()
+}
 ###CONFIGURATION
 configure<-function(depth="base"){
 	#find out data-files
@@ -93,19 +97,15 @@ library(ggplot2)
 #providiing function for check actual existance of trend
 checkTrends<-function(){
 	attach(yieldPrev)
-	if(any(names(yieldPrev) == "flatYield")){
-	cat(c("Official yields have a " ,(adf.test(flatYield$OFFICIAL_YIELD)$p.value)*100 ,"% of chances to have a trend."),fill=TRUE) } else{
-	cat(c("Official yields have a " ,(adf.test(actualYield$OFFICIAL_YIELD)$p.value)*100 ,"% of chances to have a trend."),fill=TRUE) }
-	cat(c("Look the chart for the visual assessment. \n Plotted: \n BLACK:actual data \n BROWN:linear model \n RED:LOcal regrESSion \n ORANGE:spline regression"),fill=TRUE)
-	if(any(names(yieldPrev) == "flatYield")){
-	offiPlot<-ggplot(flatYield,aes(x=YEAR, y=OFFICIAL_YIELD))+geom_point(color="black")+geom_line(color="black")+geom_smooth(method="lm",color="brown",se=FALSE)+geom_smooth(method="loess",color="red",se=FALSE)+geom_smooth(method="lm",formula= y~splines::bs(x,3),color="orange",se=FALSE) } else {
-	offiPlot<-ggplot(actualYield,aes(x=YEAR, y=OFFICIAL_YIELD))+geom_point(color="black")+geom_line(color="black")+geom_smooth(method="lm",color="brown",se=FALSE)+geom_smooth(method="loess",color="red",se=FALSE)+geom_smooth(method="lm",formula= y~splines::bs(x,3),color="orange",se=FALSE)}
-	plot(offiPlot)
-	cat(c("Do you see a trend in the data?\n	y \n remove trend \n \n	n \n "),fill=TRUE)
-	yieldPrev$flattyn<-scan(,what="text",nmax=1)
 	if(any(names(yieldPrev) == "flatYield")){}else{
-	flatYield<-actualYield
-	yieldPrev$flatYield<-actualYield }
+		flatYield<-actualYield
+		yieldPrev$flatYield<-actualYield }
+	cat(c("\n Official yields have a " ,(adf.test(flatYield$OFFICIAL_YIELD)$p.value)*100 ,"% of chances to have a trend."),fill=TRUE)
+	cat(c(" \n Look the chart for the visual assessment. \n Plotted: \n BLACK:actual data \n BROWN:linear model \n RED:LOcal regrESSion \n ORANGE:spline regression"),fill=TRUE)
+	offiPlot<-ggplot(flatYield,aes(x=YEAR, y=OFFICIAL_YIELD,group=1))+geom_point(color="black")+geom_line(color="black")+geom_smooth(method="lm",color="brown",se=FALSE)+geom_smooth(method="loess",color="red",se=FALSE)+geom_smooth(method="lm",formula= y~splines::bs(x,3),color="orange",se=FALSE)
+	plot(offiPlot)
+	cat(c(" \n Do you see a trend in the data?\n	(y / n) \n "),fill=TRUE)
+	yieldPrev$flattyn<-scan(,what="text",nmax=1)
 #	cat(c("The time serie is ",(unique(max(flatYield$YEAR))-unique(min(flatYield$YEAR))), "years long, since",unique(min(flatYield$YEAR)),"to",unique(max(flatYield$YEAR))),fill=TRUE)
 	#checking if there are troubles in the official data series.
 	if(length(c(setdiff(seq(min(flatYield$YEAR),max(flatYield$YEAR)),flatYield$YEAR),flatYield$YEAR[duplicated(flatYield$YEAR)])) == 0) cat("") else cat(c("By the way there are \n MISSING:",setdiff(seq(min(flatYield$YEAR),max(flatYield$YEAR)),flatYield$YEAR)," \n REPLICATED: ",flatYield$YEAR[duplicated(flatYield$YEAR)]))
@@ -129,14 +129,14 @@ sewTrends<-function(inizio,fine){
 	yieldPrev$flatOff<-flatOff[sapply(flatOff,function(flatOff)!any(is.na(flatOff)))]
 	flatOff<-yieldPrev$flatOff
 	trendAN<-new.env()
-	trendAN$normPlot<-ggplot(yieldPrev$flatOff)+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD),color="red")+geom_smooth(method="loess",color="red",aes(x=YEAR,y=OFFICIAL_YIELD),se=FALSE)
+	trendAN$normPlot<-ggplot(yieldPrev$flatOff)+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red")+geom_smooth(method="loess",color="red",aes(x=YEAR,y=OFFICIAL_YIELD,group=1),se=FALSE)
 	trendPlot<-function(yvar){
 
-		trendAN$normPlot<-trendAN$normPlot + geom_smooth(data=yieldPrev$flatOff,method="loess", color="cyan", aes_(x=~YEAR, y=as.name(yvar),label=yvar),se=FALSE)
+		trendAN$normPlot<-trendAN$normPlot + geom_smooth(data=yieldPrev$flatOff,method="loess", color="cyan", aes_(x=~YEAR, y=as.name(yvar),group=1),se=FALSE)
 
 	}
 	lapply(names(yieldPrev$flatOff[,c(-1)]),FUN=trendPlot)
-	trendAN$PlotNormA<-trendAN$normPlot+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD),color="red",size=1.5)+geom_smooth(method="loess",color="orange",aes(x=YEAR,y=OFFICIAL_YIELD),se=FALSE,size=1.5)+labs(x="YEARS", y="TREND")+ geom_rect(data=tempLimit, aes(xmin=begin, xmax=finish, ymin=-Inf, ymax=+Inf), fill='pink', alpha=0.5)
+	trendAN$PlotNormA<-trendAN$normPlot+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red",size=1.5)+geom_smooth(method="loess",color="orange",aes(x=YEAR,y=OFFICIAL_YIELD),se=FALSE,size=1.5)+labs(x="YEARS", y="TREND")+ geom_rect(data=tempLimit, aes(xmin=begin, xmax=finish, ymin=-Inf, ymax=+Inf), fill='pink', alpha=0.5)
 	detach(yieldPrev)
 	plot(trendAN$PlotNormA)
 
@@ -147,7 +147,7 @@ sewTrends<-function(inizio,fine){
 	yieldPrev$flatOff<-flatOff2
 	flatOff<-flatOff2
 	yieldPrev$friendShip<-data.frame(param=as.character(names(flatOff)[(names(flatOff) == "OFFICIAL_YIELD")]),trendCoef=as.numeric(lm(formula=OFFICIAL_YIELD ~ YEAR,data=flatOff)$coefficients[2]))
-	plot(trendAN$PlotNormA+stat_smooth(data=flatOff,method="lm",color="black",aes(x=YEAR,y=OFFICIAL_YIELD),fullrange=FALSE,se=FALSE,size=1))
+	plot(trendAN$PlotNormA+stat_smooth(data=flatOff,method="lm",color="black",aes(x=YEAR,y=OFFICIAL_YIELD,group=1),fullrange=FALSE,se=FALSE,size=1))
 	mayTrend<-names(flatOff)[(names(flatOff)!= "YEAR" &  names(flatOff)!= "OFFICIAL_YIELD")]
 	friendTest<-function(mate){
 		allIn<-yieldPrev$flatOff
@@ -170,33 +170,36 @@ sewTrends<-function(inizio,fine){
 	print(trendMates)
 
 	#continue to cut?
-	cat(c("Do you want to continue removing the trend in official yields"),fill=TRUE)
+	cat(c("\n Do you want to continue removing the trend in official yields"),fill=TRUE)
 	continueToCut<-scan(,what="text",nmax=1)
 	if(continueToCut == "y"){
 		#allow some sewing with Mates (in case which)
-		cat(c("Does any of the predictors explain some of the Official's Trend? \n If yes, point which one(s) by ID (multiple answers allowed) \n If none of them does, return blank: \n"),fill=TRUE)
+		cat(c("\n Does any of the predictors explain some of the Official's Trend? \n If yes, point which one(s) by ID (multiple answers allowed) \n If none of them does, return blank: \n"),fill=TRUE)
 		mateList<-scan(,nmax=length(trendMates[,1]))
-		yieldPrev$safeTrend <- mean(trendMates$trendCoef[mateList])
+		if(length(mateList >= 1)){yieldPrev$safeTrend <- mean(trendMates$trendCoef[mateList])}
 		cutTrend(inizio,fine)
 	}
 }
 
 breakTrends<-function(){ #this doesn't work
 	attach(yieldPrev)
-	flatPlot<-ggplot(yieldPrev$flatYield)+geom_point(color="black",aes(x=YEAR, y=OFFICIAL_YIELD))+geom_line(color="black",aes(x=YEAR, y=OFFICIAL_YIELD))+geom_smooth(method="lm",color="brown",se=FALSE,aes(x=YEAR, y=OFFICIAL_YIELD))+geom_smooth(method="loess",color="red",se=FALSE,aes(x=YEAR, y=OFFICIAL_YIELD))+geom_smooth(method="lm",formula= y~splines::bs(x,3),color="orange",se=FALSE,aes(x=YEAR, y=OFFICIAL_YIELD))
+	flatPlot<-ggplot(yieldPrev$flatYield)+geom_point(color="black",aes(x=YEAR, y=OFFICIAL_YIELD,group=1))+geom_line(color="black",aes(x=YEAR, y=OFFICIAL_YIELD,group=1))+geom_smooth(method="lm",color="brown",se=FALSE,aes(x=YEAR, y=OFFICIAL_YIELD,group=1))+geom_smooth(method="loess",color="red",se=FALSE,aes(x=YEAR, y=OFFICIAL_YIELD,group=1))+geom_smooth(method="lm",formula= y~splines::bs(x,3),color="orange",se=FALSE,aes(x=YEAR, y=OFFICIAL_YIELD,group=1))
 	if(any(names(yieldPrev) == "breakPoint")) flatPlot<-flatPlot + geom_rect(data=yieldPrev$breakPoint, aes(xmin=begin, xmax=finish, ymin=-Inf, ymax=+Inf), fill='yellow', alpha=0.3)
 	plot(flatPlot)
-	cat(c("Time series starts in",unique(min(flatYield$YEAR)),"and ends in ",unique(max(flatYield$YEAR))),fill=TRUE)
-		cat(c("Point the trend's edges by year\n"),fill=TRUE)
+	cat(c(" \n Time series starts in",unique(min(flatYield$YEAR)),"and ends in ",unique(max(flatYield$YEAR))),fill=TRUE)
+		cat(c(" \n Point the trend's edges by year\n"),fill=TRUE)
 		trendEdge<-scan(,nmax=2)
 		tempLimit<-data.frame(begin=min(trendEdge),finish=max(trendEdge))
 		#paint them and ask confirm.... this thing about asking confirm  is messy...
 		cutPlot<-flatPlot + geom_rect(data=tempLimit, aes(xmin=begin, xmax=finish, ymin=-Inf, ymax=+Inf), fill='pink', alpha=0.5)
 		#if(any(names(yieldPrev) == "breakPoint")) cutPlot<-cutPlotA + geom_rect(data=yieldPrev$breakPoint, aes(xmin=begin, xmax=finish, ymin=-Inf, ymax=+Inf), fill='yellow', alpha=0.3) else cutPlot <- cutPlotA
-
 		plot(cutPlot)
 
-	sewTrends(min(trendEdge),max(trendEdge))
+	#confirm
+	cat(c("\n Are the drawn lapse correct? \n (y/n)"),fill=TRUE)
+	continCut <- scan(,what="text",nmax=1)
+	if(continCut == "y"){
+	sewTrends(min(trendEdge),max(trendEdge))}
 	detach(yieldPrev)
 
 }
@@ -224,6 +227,10 @@ cutTrend<-function(inizio,fine){
 	preflat<-cutEnv$flatting
 	if(any(names(yieldPrev) == "breakPoint")) yieldPrev$breakPoint<-rbind(yieldPrev$breakPoint,c(inizio,fine,as.numeric(flatLin$coefficients[2]))) else yieldPrev$breakPoint<- data.frame(begin=inizio,finish=fine,trend=as.numeric(flatLin$coefficients[2]))
 
+	#now we have to grant no more safeTrend will influence further trends!
+	rm(yieldPrev$safeTrend)
+
+
 	#meet flatYield and preflat (now postFlat,but...by the way, i like that name!)
 	postFlat<-subset(notSoFlat,notSoFlat$YEAR < inizio | notSoFlat$YEAR > fine)
 	flatFlat<-rbind(preflat,postFlat)#epic meeting!
@@ -243,7 +250,7 @@ modSel <- function(){
 #calc.relimp(yieldPrev$regrSW,type="car")
 	print(summaSign)
 	#print(summaryHH(allSign,abbrev=3,statistics="adjr2"))
-	cat("Note: one of the accounted parameter is (Intercept) \n \n Select a model")
+	cat("\n Note: one of the accounted parameter is (Intercept) \n Select a model")
 	modId<-scan(,nmax=1)
 	yieldPrev$model_formula<-c("OFFICIAL_YIELD ~ ")
 	compleFormula<-function(parametro){
@@ -252,7 +259,6 @@ modSel <- function(){
 	#print(as.formula(yieldPrev$model_formula))
 	lapply(X=seq(2,length(names(coef(allSign,id= modId)))),FUN=compleFormula)
 	regrSW<-lm(as.formula(yieldPrev$model_formula),data=tableXregression)
-	print(regrSW)
 	relatedModel <- yieldPrev$relatedModel
 	expYield<-predict(regrSW,newdata=subset(relatedModel, relatedModel$YEAR  == yieldPrev$currentYear),se.fit=TRUE,type="response",level=0.95,interval="prediction")
 	yieldPrev$expYield <- expYield
@@ -276,10 +282,11 @@ responseYield<-function(){
 	cat(c(" \n \n \n RESPONSE \n \n ","As it is, the forecasted yield for year",yieldPrev$currentYear,"is",round(expYield$fit[1],2),"+/-",round(expYield$fit[1]-expYield$fit[2],2),"."),fill=TRUE)
 	cat(c("Confidence = 95% \n
 	\n \n CROSS-VALIDATION returned ",round(yieldPrev$CVmsRes[1],2),"as mean square error
-\n \n
-Due to the marked trends, the forecasted has, ",round(trendMissing,2)," resulting in ",round(expYield$fit[1]+trendMissing,2),". \n
-
-	\n \n
+\n and ",round(yieldPrev$CVmsRes[2],2),"as R2."),fill=TRUE)
+if(any(names(yieldPrev) == "breakPoint")){cat(c("
+Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
+"),fill=TRUE)}
+cat(c("	\n
 	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2)),fill=TRUE)
 }
 
@@ -295,12 +302,21 @@ loadYieldSession<-function(){
 	cat(c("Session in oldYieldSession loaded \n "),fill=TRUE)
 }
 
+sewedCheck<-function(){
+#save involved data that will be restored later
+yieldPrev$bckflatYield <- yieldPrev$flatYield
+yieldPrev$breakPoint
+#refresh previously edited data as original
+yieldPrev$flatYield<-yieldPrev$actualYield
+#go throught the whole process by itself
+
+#get the desired datas
+
+#restore all
+
+	}
 
 virgilio<-function(){
-	if(any(ls() == "yieldPrev")){}else{
-	yieldPrev <-new.env()
-	yieldPrev$.conflicts.OK<-c()
-}
 	configure()
 	checkTrends()
 	while(yieldPrev$flattyn == "y"){

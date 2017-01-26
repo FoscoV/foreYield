@@ -13,8 +13,9 @@
 The DESCRIPTION file:
 \packageDESCRIPTION{foreYield}
 \packageIndices{foreYield}
-~~ An overview of how to use the package, including the most important ~~
-~~ functions ~~
+The packages is designed to easily apply at forecasting yield. It only requires a couple of data as input: previous yields (Officials) and predictors coming from SIMULATIONs.
+By default (using configure(), which is the  same virgilio() does) those are assumed to come from .csv files but you can provide them by yourself having care them to be homologous to the supposed data.frame structure. If not screening the sources, yuo can check the required structure in configure().
+
 }
 \author{
 \packageAuthor{foreYield}

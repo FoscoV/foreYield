@@ -4,14 +4,14 @@
 \title{guide you all along
 }
 \description{
-It just provides a mind path across the story. If you want to use other function step by step and not this one, you have to grant yieldPrev environment
+It just provides a supervised path across the story. If you want to use other function step by step and not this one, you have to grant yieldPrev environment
 }
 \usage{
 virgilio()
 }
 %- maybe also 'usage' for other objects documented here.
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+Actually it doesn't do anything, but sort the other function (it doesn't save nor load) from earlier to later stages.
 }
 \value{
 %%  ~Describe the value returned
@@ -27,13 +27,13 @@ virgilio()
 %%  ~~who you are~~
 }
 \note{
-%%  ~~further notes~~
+No argument are supposed when calling the function
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-configure
+configure()
 }
 \examples{
 ##---- Should be DIRECTLY executable !! ----

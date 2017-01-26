@@ -37,18 +37,6 @@ loadYieldSession()
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function ()
-{
-    cat(c("Select the desired previous session saved \n "), fill = TRUE)
-    oldYieldSession <- file.choose()
-    load(file = oldYieldSession, envir = yieldPrev)
-    cat(c("Session in oldYieldSession loaded \n "), fill = TRUE)
-  }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

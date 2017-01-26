@@ -2,10 +2,10 @@
 \alias{saveYieldSession}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Simply saves yieldPrev environment where you like
+Simply saves yieldPrev environment for future use
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+The environment is saved with a name containing date, country code and crop code.
 }
 \usage{
 saveYieldSession()
@@ -37,20 +37,6 @@ saveYieldSession()
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function ()
-{
-    attach(yieldPrev)
-    save(list = ls(yieldPrev), file = paste(Sys.Date(), saveCountry,
-        saveCrop, ".R", sep = ""))
-    cat(c("Session saved in ", paste(Sys.Date(), saveCountry,
-        saveCrop, ".R", sep = ""), ". \n Use loadYieldSession() to restore in future sessions."),
-        fill = TRUE)
-  }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

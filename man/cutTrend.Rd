@@ -5,18 +5,20 @@
 Actually do the cutting of trends, not simply setting it
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Two input parameters: It receives the edges to cut at.
+
 }
 \usage{
+#called by sewTrends()
 cutTrend(inizio, fine)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{inizio}{
-%%     ~~Describe \code{inizio} here~~
+ is the lower year (included) of the trended lapse
 }
   \item{fine}{
-%%     ~~Describe \code{fine} here~~
+ is the upper year (included) of the trended lapse
 }
 }
 \details{
@@ -36,7 +38,15 @@ cutTrend(inizio, fine)
 %%  ~~who you are~~
 }
 \note{
-%%  ~~further notes~~
+The lower year included in the trend comes out as it get in.
+Considering that the trand is, at that time, experiencing the year of its start no changes actually occur.
+
+
+Mathematically, the trend is accounted to be linear, and so described by the following:
+
+$yield_{n~unTrended}= yield_{n~Offical} - ( year_{n} - year_{startTrend} ) * Trend_{coefficient}  $
+
+So that is clear that for n = startTrend (aka "inizio") it is that the trend and the unTrended versions of yield are the same.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
@@ -45,44 +55,6 @@ cutTrend(inizio, fine)
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (inizio, fine)
-{
-    notSoFlat <- yieldPrev$flatYield
-    preflat <- subset(notSoFlat, notSoFlat$YEAR >= inizio & notSoFlat$YEAR <=
-        fine)
-    flatLin <- lm(OFFICIAL_YIELD ~ YEAR, data = preflat)
-    cutEnv <- new.env()
-    cutEnv$modello <- flatLin
-    cutEnv$flatting <- preflat
-    if (any(names(yieldPrev) == "safeTrend)")) {
-        cutEnv$trendCorr <- (flatLin$coefficients[2] - yieldPrev$safeTrend)
-    }
-    else {
-        cutEnv$trendCorr <- flatLin$coefficients[2]
-    }
-    smootherer <- function(num) {
-        model <- cutEnv$modello
-        flat <- (model$model[num, 1]) - (model$model[num, 2] -
-            model$model[1, 2]) * cutEnv$trendCorr
-        cutEnv$flatting[num, 2] <- flat
-    }
-    lapply(X = seq(1, length(preflat$OFFICIAL_YIELD)), FUN = smootherer)
-    preflat <- cutEnv$flatting
-    if (any(names(yieldPrev) == "breakPoint"))
-        yieldPrev$breakPoint <- rbind(yieldPrev$breakPoint, c(inizio,
-            fine, as.numeric(flatLin$coefficients[2])))
-    else yieldPrev$breakPoint <- data.frame(begin = inizio, finish = fine,
-        trend = as.numeric(flatLin$coefficients[2]))
-    postFlat <- subset(notSoFlat, notSoFlat$YEAR < inizio | notSoFlat$YEAR >
-        fine)
-    flatFlat <- rbind(preflat, postFlat)
-    yieldPrev$flatYield <- flatFlat[order(flatFlat$YEAR), ]
-  }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

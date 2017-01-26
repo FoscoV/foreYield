@@ -5,6 +5,6 @@ Version: 1.0
 Date: 2017-01-25
 Author: Fosco Vesely
 Maintainer: Fosco Vesely <fosco@tana.it>
-Import:tseries,forecast,ggplot2,MASS,leaps,HH
+Depends:tseries,forecast,ggplot2,MASS,leaps,HH
 Description: Using past yield and model predictors, forecast the yield resulting for the current (the last) year (simulated year). Nothing new but the interface "virgilio()" providing easy use without any (almost) knowledge of R
 License: Development stage, no licensing anybody to anything

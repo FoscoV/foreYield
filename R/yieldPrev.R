@@ -5,10 +5,13 @@
 ###CONFIGURATION
 configure<-function(depth="base"){
 	#find out data-files
-	cat("If you created your csv databases using MS Office, write <1> here, else <0>", fill=TRUE)
-	msoffice<-scan(,nmax=1)
+	#cat("If you created your csv databases using MS Office, write <1> here, else <0>", fill=TRUE)
+	#msoffice<-scan(,nmax=1)
 	cat("Provide OFFICIAL yield database",fill=TRUE)
-	if(msoffice == 1) eurostat<-read.table(file.choose(), header=T, sep=";") else eurostat<-read.csv(file.choose())
+	offiData<-file.choose()
+	write.table(gsub(gsub(scan(file=offiData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjOffi.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+	eurostat<-read.csv("adjOffi.csv")
+#	if(msoffice == 1) eurostat<-read.table(file.choose(), header=T, sep=";") else eurostat<-read.csv(file.choose())
 
 	if (depth == "advanced" && depth == "adv-offi"){
 		#you are here only if the official tables are not in the format supposed... we are going to work on them
@@ -32,7 +35,10 @@ configure<-function(depth="base"){
 	}
 
 	cat("Provide SIMULATE yield database",fill=TRUE)
-	if(msoffice == 1) prev<-read.table(file.choose(), header=T, sep=";") else prev<-read.csv(file.choose())
+	simuData<-file.choose()
+	write.table(gsub(gsub(scan(file=simuData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjSimu.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+	prev <- read.csv("adjSimu.csv")
+	#if(msoffice == 1) prev<-read.table(file.choose(), header=T, sep=";") else prev<-read.csv(file.choose())
 
 	if (depth == "advanced" && depth == "adv-simul"){
 		#you are here only if the prevision tables are not in the format supposed... we are going to work on them
@@ -61,15 +67,23 @@ configure<-function(depth="base"){
 	#choice of crop parameters
 	cat(c("OFFICIAL yield data contains information for the following CROPs:\n",unique(eurostat$STAT_CROP_NO),"\n Choose one:",fill=TRUE))
 	cropO<-scan(,nmax=1)
+	while(any(unique(eurostat$STAT_CROP_NO) == cropO) == FALSE){cat("point an existing one \n ")
+		cropO<-scan(,nmax=1)}
 	cat(c("SIMULATED yield data contains information for the following CROPs:\n",unique(prev$CROP_NO),"\n Choose one:",fill=TRUE))
 	cropS<-scan(,nmax=1)
+	while(any(unique(prev$CROP_NO) == cropS) == FALSE){cat("point an existing one \n ")
+	cropS<-scan(,nmax=1)}
 
 	#choice of country
-	cat(c("Following countries are provided by the DataBases:\n","OFFICIAL:",levels(eurostat$NUTS_CODE),"\n SIMULATION:",levels(prev$NUTS_CODE),"(case sensitive\n"),fill=TRUE)
+	cat(c("Following countries are provided by the DataBases:\n","OFFICIAL:",levels(eurostat$NUTS_CODE),"\n SIMULATION:",levels(prev$NUTS_CODE),"(case sensitive) \n"),fill=TRUE)
 	cat(" OFFICIAL COUNTRY:")
 	countryO<-scan(,what="text",nmax=1)
+	while(any(levels(eurostat$NUTS_CODE) == countryO) == FALSE){cat("point an existing one \n ")
+	countryO<-scan(,what="text",nmax=1)}
 	cat("\n SIMULATION COUNTRY")
 	countryS<-scan(,what="text",nmax=1)
+	while(any(levels(prev$NUTS_CODE) == countryS) == FALSE){cat("point an existing one \n ")
+	countryS<-scan(,what="text",nmax=1)}
 	#subsetting conforming the configuration set above
 	actualYield<-subset(eurostat, eurostat$STAT_CROP_NO == cropO & eurostat$NUTS_CODE == countryO)[,c(which(names(eurostat)=="YEAR"),which(names(eurostat)=="OFFICIAL_YIELD"))]
 	yieldPrev$actualYield<-actualYield[order(actualYield$YEAR),]
@@ -100,12 +114,15 @@ checkTrends<-function(){
 	if(any(names(yieldPrev) == "flatYield")){}else{
 		flatYield<-actualYield
 		yieldPrev$flatYield<-actualYield }
-	cat(c("\n Official yields have a " ,(adf.test(flatYield$OFFICIAL_YIELD)$p.value)*100 ,"% of chances to have a trend."),fill=TRUE)
+	cat(c("\n Official yields have a " ,round((adf.test(flatYield$OFFICIAL_YIELD)$p.value)*100,2),"% of chances to have a trend."),fill=TRUE)
 	cat(c(" \n Look the chart for the visual assessment. \n Plotted: \n BLACK:actual data \n BROWN:linear model \n RED:LOcal regrESSion \n ORANGE:spline regression"),fill=TRUE)
 	offiPlot<-ggplot(flatYield,aes(x=YEAR, y=OFFICIAL_YIELD,group=1))+geom_point(color="black")+geom_line(color="black")+geom_smooth(method="lm",color="brown",se=FALSE)+geom_smooth(method="loess",color="red",se=FALSE)+geom_smooth(method="lm",formula= y~splines::bs(x,3),color="orange",se=FALSE)
 	plot(offiPlot)
 	cat(c(" \n Do you see a trend in the data?\n	(y / n) \n "),fill=TRUE)
 	yieldPrev$flattyn<-scan(,what="text",nmax=1)
+	while(yieldPrev$flattyn != "y" & yieldPrev$flattyn != "n"){
+		cat("answer y or n \n ")
+		yieldPrev$flattyn<-scan(,what="text",nmax=1)}
 #	cat(c("The time serie is ",(unique(max(flatYield$YEAR))-unique(min(flatYield$YEAR))), "years long, since",unique(min(flatYield$YEAR)),"to",unique(max(flatYield$YEAR))),fill=TRUE)
 	#checking if there are troubles in the official data series.
 	if(length(c(setdiff(seq(min(flatYield$YEAR),max(flatYield$YEAR)),flatYield$YEAR),flatYield$YEAR[duplicated(flatYield$YEAR)])) == 0) cat("") else cat(c("By the way there are \n MISSING:",setdiff(seq(min(flatYield$YEAR),max(flatYield$YEAR)),flatYield$YEAR)," \n REPLICATED: ",flatYield$YEAR[duplicated(flatYield$YEAR)]))
@@ -172,6 +189,9 @@ sewTrends<-function(inizio,fine){
 	#continue to cut?
 	cat(c("\n Do you want to continue removing the trend in official yields"),fill=TRUE)
 	continueToCut<-scan(,what="text",nmax=1)
+	while(continueToCut != "y" & continueToCut != "n"){
+		cat("answer y or n")
+		continueToCut<-scan(,what="text",nmax=1)}
 	if(continueToCut == "y"){
 		#allow some sewing with Mates (in case which)
 		cat(c("\n Does any of the predictors explain some of the Official's Trend? \n If yes, point which one(s) by ID (multiple answers allowed) \n If none of them does, return blank: \n"),fill=TRUE)
@@ -200,6 +220,9 @@ breakTrends<-function(){ #this doesn't work
 	#confirm
 	cat(c("\n Are the drawn lapse correct? \n (y/n)"),fill=TRUE)
 	continCut <- scan(,what="text",nmax=1)
+	while(continCut != "y" & continCut != "n"){
+		cat("answer y or n")
+	continCut <- scan(,what="text",nmax=1)}
 	if(continCut == "y"){
 	sewTrends(min(trendEdge),max(trendEdge))}
 	detach(yieldPrev)
@@ -244,7 +267,16 @@ library(leaps)
 library(HH)
 modSel <- function(){
 	tableXregression <-merge(yieldPrev$flatYield , yieldPrev$relatedModel , by="YEAR")
-	allSign <- regsubsets(OFFICIAL_YIELD~.^2+.,data=tableXregression[,c(-1)],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)
+	cat("Are you looking for a standard additive model? \n a models accounting for combined predictors. \n Which do you prefer? \n ")
+	cat(" 1. standard \n 2. enhanced \n ")
+	standardModel<-scan(,what="text",nmax=1)
+	while(standardModel != "1" & standardModel != "2" & standardModel != "standard" & standardModel != "enhanced" ){
+		cat(" 1. standard \n 2. enhanced \n ")
+		standardModel<-scan(,what="text",nmax=1)}
+	if(standardModel == "1" | standardModel == "standard"){
+	allSign <- regsubsets(OFFICIAL_YIELD~.,data=tableXregression[,c(-1)],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
+	if(standardModel == "2" | standardModel == "enhanced"){
+	allSign <- regsubsets(OFFICIAL_YIELD~.^2+.,data=tableXregression[,c(-1)],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
 	#renaming predictors with numbers
 	summaSign<-summaryHH(allSign,names=seq(1,length(allSign$xnames)),statistics="adjr2")
 	plot(summaSign,col="green",cex=0.8)
@@ -294,8 +326,8 @@ cat(c("	\n
 
 saveYieldSession<- function(){
 	attach(yieldPrev)
-	save(list=ls(yieldPrev),file=paste(Sys.Date(),saveCountry,saveCrop,".R",sep=""))
-	cat(c("Session saved in ",paste(Sys.Date(),saveCountry,saveCrop,".R",sep=""),". \n Use loadYieldSession() to restore in future sessions."),fill=TRUE)
+	save(list=ls(yieldPrev),file=paste(Sys.Date(),saveCountry,saveCrop,".RData",sep=""))
+	cat(c("Session saved in ",paste(Sys.Date(),saveCountry,saveCrop,".RData",sep=""),". \n Use loadYieldSession() to restore in future sessions."),fill=TRUE)
 }
 loadYieldSession<-function(){
 	cat(c("Select the desired previous session saved \n "),fill=TRUE)

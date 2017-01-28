@@ -312,7 +312,7 @@ library(DAAG)
 responseYield<-function(){
 	expYield <- yieldPrev$expYield
 	knoTime<-yieldPrev$breakPoint
-	trendMissing<-(knoTime$finish - knoTime$begin)*knoTime$trend
+	trendMissing<-(knoTime$finish - knoTime$begin+1)*knoTime$trend
 	cat(c(" \n \n \n RESPONSE \n \n ","As it is, the forecasted yield for year",yieldPrev$currentYear,"is",round(expYield$fit[1],2),"+/-",round(expYield$fit[1]-expYield$fit[2],2),"."),fill=TRUE)
 	cat(c("Confidence = 95% \n
 	\n \n CROSS-VALIDATION returned ",round(yieldPrev$CVmsRes[1],2),"as mean square error
@@ -328,8 +328,8 @@ cat(c("	\n
 	motoCross<-cv.lm(data=yieldPrev$tableXregression, formula(yieldPrev$modelLM), m=length(yieldPrev$tableXregression[,1]),printit=FALSE)
 	#keep out Year and cvpred
 	crValPre<-data.frame(year=motoCross$YEAR,pred=motoCross$cvpred)
-	respoPlot<- ggplot(crValPre)+geom_line(aes(x=year,y=pred,group=1),color="green",data=crValPre)+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red",data=yieldPrev$flatYield)
-	cat(c("Plotted:\n GREEN: Predicted yield in Cross Validation \n RED: Data on which models are regressed \n "),fill=TRUE)
+	respoPlot<- ggplot(crValPre)
+	cat(c("Plotted:\n GREEN: Predicted yield in Cross Validation \n RED: Data on which models are regressed"),fill=TRUE)
 	if(any(names(yieldPrev) == "breakPoint")){
 		untrend<-yieldPrev$flatYield
 		yieldPrev$omniYield<-data.frame(YEAR=crValPre$year,trendCorr=rep(0,length(crValPre$year)))
@@ -339,11 +339,15 @@ cat(c("	\n
 					yieldPrev$omniYield[which(yieldPrev$omniYield$YEAR == anno),2]<-yieldPrev$omniYield[which(yieldPrev$omniYield$YEAR == anno),2]+breakPoint$trend*(anno-breakPoint$begin)
 				}
 			}
-		mapply(trendBack,anno=unique(crValPre$year),lapse=seq(1:length(yieldPrev$breakPoint[,1])))
+		layearpse<-expand.grid(unique(crValPre$year),seq(1:length(yieldPrev$breakPoint[,1])))
+		mapply(trendBack,anno=layearpse[,1],lapse=layearpse[,2])
 		yieldPrev$omniYield$YIELD<-crValPre$pred+yieldPrev$omniYield$trendCorr
+		yieldPrev$omniYield<-rbind(yieldPrev$omniYield,c(yieldPrev$currentYear,trendMissing,expYield$fit[1]+trendMissing))
 		respoPlot <- respoPlot+geom_line(aes(x=YEAR,y=YIELD),color="blue",data=yieldPrev$omniYield)+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD),color="black",data=yieldPrev$actualYield)
-		cat(c("BLUE: Predicted yield, restored trend \n BLACK: Real data \n "),fill=TRUE)
+		cat(c(" BLUE: Predicted yield, restored trend \n BLACK: Real data \n "),fill=TRUE)
 	}
+	crValPre<-rbind(crValPre,c(yieldPrev$currentYear,expYield$fit[1]))
+	respoPlot<-respoPlot+geom_line(aes(x=year,y=pred,group=1),color="green",data=crValPre)+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red",data=yieldPrev$flatYield)
 	plot(respoPlot)
 }
 

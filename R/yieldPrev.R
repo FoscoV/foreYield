@@ -306,7 +306,7 @@ modSel <- function(){
 	yieldPrev$CVmsRes<-c(validC[1],validC[5])
 	#yieldPrev$CVmsRes<-attributes(validC)$ms
 }
-#library(DAAG)
+library(DAAG)
 
 
 responseYield<-function(){
@@ -322,6 +322,29 @@ Due to the marked trends, the forecasted has to be corrected with ",round(trendM
 "),fill=TRUE)}
 cat(c("	\n
 	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2)),fill=TRUE)
+
+	#crossVal plot
+	#acquire loocv single data
+	motoCross<-cv.lm(data=yieldPrev$tableXregression, formula(yieldPrev$modelLM), m=length(yieldPrev$tableXregression[,1]),printit=FALSE)
+	#keep out Year and cvpred
+	crValPre<-data.frame(year=motoCross$YEAR,pred=motoCross$cvpred)
+	respoPlot<- ggplot(crValPre)+geom_line(aes(x=year,y=pred,group=1),color="green",data=crValPre)+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red",data=yieldPrev$flatYield)
+	cat(c("Plotted:\n GREEN: Predicted yield in Cross Validation \n RED: Data on which models are regressed \n "),fill=TRUE)
+	if(any(names(yieldPrev) == "breakPoint")){
+		untrend<-yieldPrev$flatYield
+		yieldPrev$omniYield<-data.frame(YEAR=crValPre$year,trendCorr=rep(0,length(crValPre$year)))
+		trendBack<-function(anno,lapse){
+				breakPoint<-yieldPrev$breakPoint[lapse,]
+				if (anno >= breakPoint$begin & anno <= breakPoint$finish){
+					yieldPrev$omniYield[which(yieldPrev$omniYield$YEAR == anno),2]<-yieldPrev$omniYield[which(yieldPrev$omniYield$YEAR == anno),2]+breakPoint$trend*(anno-breakPoint$begin)
+				}
+			}
+		mapply(trendBack,anno=unique(crValPre$year),lapse=seq(1:length(yieldPrev$breakPoint[,1])))
+		yieldPrev$omniYield$YIELD<-crValPre$pred+yieldPrev$omniYield$trendCorr
+		respoPlot <- respoPlot+geom_line(aes(x=YEAR,y=YIELD),color="blue",data=yieldPrev$omniYield)+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD),color="black",data=yieldPrev$actualYield)
+		cat(c("BLUE: Predicted yield, restored trend \n BLACK: Real data \n "),fill=TRUE)
+	}
+	plot(respoPlot)
 }
 
 saveYieldSession<- function(){
@@ -357,7 +380,7 @@ virgilio<-function(){
 		breakTrends()
 		checkTrends()
 	}
-	modSel()
-	responseYield()
+	suppressWarnings(modSel())
+	suppressWarnings(responseYield())
 }
 

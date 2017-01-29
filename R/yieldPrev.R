@@ -343,11 +343,11 @@ cat(c("	\n
 		mapply(trendBack,anno=layearpse[,1],lapse=layearpse[,2])
 		yieldPrev$omniYield$YIELD<-crValPre$pred+yieldPrev$omniYield$trendCorr
 		yieldPrev$omniYield<-rbind(yieldPrev$omniYield,c(yieldPrev$currentYear,trendMissing,expYield$fit[1]+trendMissing))
-		respoPlot <- respoPlot+geom_line(aes(x=YEAR,y=YIELD),color="blue",data=yieldPrev$omniYield)+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD),color="black",data=yieldPrev$actualYield)
+		respoPlot <- respoPlot+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD),color="black",size=1.5,data=yieldPrev$actualYield)+geom_line(aes(x=YEAR,y=YIELD),color="blue",data=yieldPrev$omniYield)
 		cat(c(" BLUE: Predicted yield, restored trend \n BLACK: Real data \n "),fill=TRUE)
 	}
 	crValPre<-rbind(crValPre,c(yieldPrev$currentYear,expYield$fit[1]))
-	respoPlot<-respoPlot+geom_line(aes(x=year,y=pred,group=1),color="green",data=crValPre)+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red",data=yieldPrev$flatYield)
+	respoPlot<-respoPlot+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red",size=1.5,data=yieldPrev$flatYield)+geom_line(aes(x=year,y=pred,group=1),color="green",data=crValPre)
 	plot(respoPlot)
 }
 
@@ -378,11 +378,11 @@ yieldPrev$flatYield<-yieldPrev$actualYield
 	}
 
 virgilio<-function(){
-	configure()
-	checkTrends()
+	suppressWarnings(configure())
+	suppressWarnings(checkTrends())
 	while(yieldPrev$flattyn == "y"){
-		breakTrends()
-		checkTrends()
+		suppressWarnings(breakTrends())
+		suppressWarnings(checkTrends())
 	}
 	suppressWarnings(modSel())
 	suppressWarnings(responseYield())

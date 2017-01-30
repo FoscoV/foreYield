@@ -329,7 +329,7 @@ responseYield<-function(){
 	\n \n CROSS-VALIDATION returned ",round(yieldPrev$CVmsRes[1],2),"as mean square error
 \n and ",round(yieldPrev$CVmsRes[2],2),"as R2."),fill=TRUE)
 if(any(names(yieldPrev) == "due2trend")){cat(c("
-Due to the marked trends, the forecasted has to be corrected with ",round(yieldPrev$due2trend$trended[length(yieldPrev$due2trend$trended)],2)," resulting, so, as ",round(expYield$fit[1]+yieldPrev$due2trend$trended[length(yieldPrev$due2trend$trended)]+trendMissing,2),". \n
+Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
 "),fill=TRUE)}
 cat(c("	\n
 	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2)),fill=TRUE)

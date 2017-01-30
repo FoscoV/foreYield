@@ -94,7 +94,21 @@ configure<-function(depth="base"){
 	yieldPrev$currentYear <- currentYear
 	currentDecade<- max(subset(relatedModel,relatedModel$YEAR==currentYear)$DECADE)
 	cat(c("It seems forecasting the year",currentYear,"with data till the ",currentDecade,"th decade"),fill=TRUE)
-	yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
+	cat(c("Do you want to change Decade assumption? \n "))
+	changeYD<-scan(,what="text",nmax=1)
+	while(changeYD != "y" & changeYD != "n"){
+		cat("answer y or n")
+		changeYD<-scan(,what="text",nmax=1)
+	}
+	if(changeYD == "n"){
+		yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
+	}
+	if(changeYD == "y"){
+		cat(c("Digit desired Decade"))
+		#suggest: loop checking that the desired decade is lower than the last one...
+		currentDecade<-scan(,nmax=1)
+		yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
+	}
 
 	#save information for saveYieldSession()
 	yieldPrev$saveCrop<-cropS
@@ -325,11 +339,12 @@ responseYield<-function(){
 	if(max(knoTime$finish)== (yieldPrev$currentYear -1)){
 	trendMissing<-mean(knoTime$trend[which(knoTime$finish == max(knoTime$finish))])+yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )]} else {trendMissing <- yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )] }
 	cat(c(" \n \n \n RESPONSE \n \n ","As it is, the forecasted yield for year",yieldPrev$currentYear,"is",round(expYield$fit[1],2),"+/-",round(expYield$fit[1]-expYield$fit[2],2),"."),fill=TRUE)
-	cat(c("Confidence = 95% \n
-	\n \n CROSS-VALIDATION returned ",round(yieldPrev$CVmsRes[1],2),"as mean square error
-\n and ",round(yieldPrev$CVmsRes[2],2),"as R2."),fill=TRUE)
-if(any(names(yieldPrev) == "due2trend")){cat(c("
-Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
+	cat(c("Confidence = 95% \n	\n CROSS-VALIDATION \n ",round(yieldPrev$CVmsRes[1],2),"as mean square error \n and ",round(yieldPrev$CVmsRes[2],2),"as R2."),fill=TRUE)
+	pcr_model<-pcr(OFFICIAL_YIELD ~ . ,data=yieldPrev$tableXregression[c(-14)],scale=TRUE,validation="LOO",ncomp=4)
+	pcr4<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=4)
+	pcr3<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=3)
+	cat(c("\n Principal Component Regression (PCR) predicted \n ",round(pcr4,2)," using 4 components \n ",round(pcr3,2)," using 3 components."))
+if(any(names(yieldPrev) == "due2trend")){cat(c("\n \n Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
 "),fill=TRUE)}
 cat(c("	\n
 	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2)),fill=TRUE)

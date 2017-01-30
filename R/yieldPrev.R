@@ -229,37 +229,48 @@ breakTrends<-function(){ #this doesn't work
 
 }
 library(MASS)
-
 cutTrend<-function(inizio,fine){
-	notSoFlat <-yieldPrev$flatYield
+	if(any(names(yieldPrev) == "due2trend")){} else {
+		yieldPrev$due2trend<-data.frame(YEAR=yieldPrev$actualYield$YEAR,trended=rep(0,length=length(yieldPrev$actualYield$YEAR)))
+	}
+	notSoFlat <-yieldPrev$actualYield
 	#cutting trend from inizio to fine
 	preflat<-subset(notSoFlat,notSoFlat$YEAR >= inizio & notSoFlat$YEAR <= fine)
 	flatLin<-lm(OFFICIAL_YIELD~YEAR,data=preflat)
 	#developing the flat "officials"
-    cutEnv<-new.env()
+	cutEnv<-new.env()
     cutEnv$modello<-flatLin
     cutEnv$flatting<-preflat
     if(any(names(yieldPrev)=="safeTrend)")){cutEnv$trendCorr<-(flatLin$coefficients[2]-yieldPrev$safeTrend)} else{ cutEnv$trendCorr<-flatLin$coefficients[2]}
     smootherer<-function(num){
 		#attach(cutEnv)
 		model<-cutEnv$modello
-		flat<-(model$model[num,1])-(model$model[num,2]-model$model[1,2])* cutEnv$trendCorr
-		cutEnv$flatting[num,2]<-flat
+		#flat<-(model$model[num,1])-(model$model[num,2]-model$model[1,2])* cutEnv$trendCorr
+		yieldPrev$due2trend[which(yieldPrev$due2trend$YEAR == model$model[num,2]),2]<-yieldPrev$due2trend[which(yieldPrev$due2trend$YEAR == model$model[num,2]),2]+(model$model[num,2]-model$model[1,2])* cutEnv$trendCorr
+		#cutEnv$flatting[num,2]<-flat
 		#print(flatting[num,])
 		#detach(cutEnv)
 	}
 	lapply(X=seq(1,length(preflat$OFFICIAL_YIELD)),FUN=smootherer)
-	preflat<-cutEnv$flatting
+	#preflat<-cutEnv$flatting
 	if(any(names(yieldPrev) == "breakPoint")) yieldPrev$breakPoint<-rbind(yieldPrev$breakPoint,c(inizio,fine,as.numeric(flatLin$coefficients[2]))) else yieldPrev$breakPoint<- data.frame(begin=inizio,finish=fine,trend=as.numeric(flatLin$coefficients[2]))
 
+	trendInt<-function(anno){
+		model<-cutEnv$modello
+		interTrend<-(model$model[length(model$model[,2]),2]-model$model[1,2])* cutEnv$trendCorr
+		yieldPrev$due2trend[which(yieldPrev$due2trend$YEAR == anno),2]<- yieldPrev$due2trend[which(yieldPrev$due2trend$YEAR == anno),2] + interTrend
+	}
+
+	if(length(subset(notSoFlat$YEAR,notSoFlat$YEAR > fine)) > 0){
+		lapply(X=seq((fine+1),max(notSoFlat$YEAR)),FUN=trendInt)
+		}
 	#now we have to grant no more safeTrend will influence further trends!
 	yieldPrev$safeTrend<- NULL
 
 
 	#meet flatYield and preflat (now postFlat,but...by the way, i like that name!)
-	postFlat<-subset(notSoFlat,notSoFlat$YEAR < inizio | notSoFlat$YEAR > fine)
-	flatFlat<-rbind(preflat,postFlat)#epic meeting!
-	yieldPrev$flatYield<-flatFlat[order(flatFlat$YEAR),]
+
+	yieldPrev$flatYield$OFFICIAL_YIELD<-yieldPrev$actualYield$OFFICIAL_YIELD - yieldPrev$due2trend$trended
 }
 
 
@@ -308,17 +319,17 @@ modSel <- function(){
 }
 library(DAAG)
 
-
 responseYield<-function(){
 	expYield <- yieldPrev$expYield
 	knoTime<-yieldPrev$breakPoint
-	trendMissing<-(knoTime$finish - knoTime$begin+1)*knoTime$trend
+	if(max(knoTime$finish)== (yieldPrev$currentYear -1)){
+	trendMissing<-mean(knoTime$trend[which(knoTime$finish == max(knoTime$finish))])+yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )]} else {trendMissing <- yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )] }
 	cat(c(" \n \n \n RESPONSE \n \n ","As it is, the forecasted yield for year",yieldPrev$currentYear,"is",round(expYield$fit[1],2),"+/-",round(expYield$fit[1]-expYield$fit[2],2),"."),fill=TRUE)
 	cat(c("Confidence = 95% \n
 	\n \n CROSS-VALIDATION returned ",round(yieldPrev$CVmsRes[1],2),"as mean square error
 \n and ",round(yieldPrev$CVmsRes[2],2),"as R2."),fill=TRUE)
-if(any(names(yieldPrev) == "breakPoint")){cat(c("
-Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
+if(any(names(yieldPrev) == "due2trend")){cat(c("
+Due to the marked trends, the forecasted has to be corrected with ",round(yieldPrev$due2trend$trended[length(yieldPrev$due2trend$trended)],2)," resulting, so, as ",round(expYield$fit[1]+yieldPrev$due2trend$trended[length(yieldPrev$due2trend$trended)]+trendMissing,2),". \n
 "),fill=TRUE)}
 cat(c("	\n
 	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2)),fill=TRUE)
@@ -327,27 +338,20 @@ cat(c("	\n
 	#acquire loocv single data
 	motoCross<-cv.lm(data=yieldPrev$tableXregression, formula(yieldPrev$modelLM), m=length(yieldPrev$tableXregression[,1]),printit=FALSE)
 	#keep out Year and cvpred
-	crValPre<-data.frame(year=motoCross$YEAR,pred=motoCross$cvpred)
+	crValPre<-data.frame(YEAR=motoCross$YEAR,pred=motoCross$cvpred)
 	respoPlot<- ggplot(crValPre)
 	cat(c("Plotted:\n GREEN: Predicted yield in Cross Validation \n RED: Data on which models are regressed"),fill=TRUE)
-	if(any(names(yieldPrev) == "breakPoint")){
+	if(any(names(yieldPrev) == "due2trend")){
 		untrend<-yieldPrev$flatYield
-		yieldPrev$omniYield<-data.frame(YEAR=crValPre$year,trendCorr=rep(0,length(crValPre$year)))
-		trendBack<-function(anno,lapse){
-				breakPoint<-yieldPrev$breakPoint[lapse,]
-				if (anno >= breakPoint$begin & anno <= breakPoint$finish){
-					yieldPrev$omniYield[which(yieldPrev$omniYield$YEAR == anno),2]<-yieldPrev$omniYield[which(yieldPrev$omniYield$YEAR == anno),2]+breakPoint$trend*(anno-breakPoint$begin)
-				}
-			}
-		layearpse<-expand.grid(unique(crValPre$year),seq(1:length(yieldPrev$breakPoint[,1])))
-		mapply(trendBack,anno=layearpse[,1],lapse=layearpse[,2])
-		yieldPrev$omniYield$YIELD<-crValPre$pred+yieldPrev$omniYield$trendCorr
-		yieldPrev$omniYield<-rbind(yieldPrev$omniYield,c(yieldPrev$currentYear,trendMissing,expYield$fit[1]+trendMissing))
+		yieldPrev$omniYield<-merge(crValPre,yieldPrev$due2trend,by="YEAR")
+		yieldPrev$omniYield<-rbind(yieldPrev$omniYield,c(yieldPrev$currentYear,expYield$fit[1],trendMissing))
+		yieldPrev$omniYield$YIELD<-yieldPrev$omniYield$pred+yieldPrev$omniYield$trended
+
 		respoPlot <- respoPlot+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD),color="black",size=1.5,data=yieldPrev$actualYield)+geom_line(aes(x=YEAR,y=YIELD),color="blue",data=yieldPrev$omniYield)
 		cat(c(" BLUE: Predicted yield, restored trend \n BLACK: Real data \n "),fill=TRUE)
 	}
 	crValPre<-rbind(crValPre,c(yieldPrev$currentYear,expYield$fit[1]))
-	respoPlot<-respoPlot+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red",size=1.5,data=yieldPrev$flatYield)+geom_line(aes(x=year,y=pred,group=1),color="green",data=crValPre)
+	respoPlot<-respoPlot+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red",size=1.5,data=yieldPrev$flatYield)+geom_line(aes(x=YEAR,y=pred,group=1),color="green",data=crValPre)
 	plot(respoPlot)
 }
 

@@ -4,90 +4,95 @@
 }
 ###CONFIGURATION
 configure<-function(depth="base"){
-	#find out data-files
-	#cat("If you created your csv databases using MS Office, write <1> here, else <0>", fill=TRUE)
-	#msoffice<-scan(,nmax=1)
-	cat("Provide OFFICIAL yield database",fill=TRUE)
-	offiData<-file.choose()
-	write.table(gsub(gsub(scan(file=offiData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjOffi.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+	cat(c("Do you have a single file database or official and simulation split in two different files? \n 1.single file \n 2. double files \n (answer by numer)"),fill=TRUE)
+	numFiles<-NULL
+	numFiles<-scan(,nmax=1)
+	while(numFiles != 1 & numFiles != 2){cat(c(" 1 and 2 are the only answers supported  \n 1.single file \n 2. double files \n "))
+		numFiles<-scan(,nmax=1)
+	}
+	if(numFiles == 2){
+		#find out data-files
+		#cat("If you created your csv databases using MS Office, write <1> here, else <0>", fill=TRUE)
+		#msoffice<-scan(,nmax=1)
+		cat("Provide OFFICIAL yield database",fill=TRUE)
+		offiData<-file.choose()
+		write.table(gsub(gsub(scan(file=offiData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjOffi.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+
+	#	if(msoffice == 1) eurostat<-read.table(file.choose(), header=T, sep=";") else eurostat<-read.csv(file.choose())
+
+
+		cat("Provide SIMULATE yield database",fill=TRUE)
+		simuData<-file.choose()
+		write.table(gsub(gsub(scan(file=simuData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjSimu.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+	}
+	if(numFiles == 1){
+		cat(c("Point out your database \n"))
+		allData<-file.choose()
+		write.table(gsub(gsub(scan(file=allData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjDtb.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+		longData<-read.csv("adjDtb.csv")
+		library(tidyr)
+		bothData<-spread(longData,INDICATOR_CODE,INDICATOR_VALUE)
+		write.csv(bothData[,c(which(names(bothData)=="YEAR"),which(names(bothData)=="official.yield"|names(bothData)=="Officiall yield"|names(bothData)=="OFFICIAL_YIELD"|names(bothData)=="Official.yield"|names(bothData)=="official_yield"|names(bothData)=="Official_yield"))],"adjOffi.csv",quote=FALSE,row.names=FALSE)
+		write.csv(bothData[,c(-which(names(bothData)=="official.yield"|names(bothData)=="Officiall yield"|names(bothData)=="OFFICIAL_YIELD"|names(bothData)=="Official.yield"|names(bothData)=="official_yield"|names(bothData)=="Official_yield"))],"adjSimu.csv",quote=FALSE,row.names=FALSE)
+	}
+
 	eurostat<-read.csv("adjOffi.csv")
-#	if(msoffice == 1) eurostat<-read.table(file.choose(), header=T, sep=";") else eurostat<-read.csv(file.choose())
-
-	if (depth == "advanced" && depth == "adv-offi"){
-		#you are here only if the official tables are not in the format supposed... we are going to work on them
-		freakoffi<-eurostat
-		cat(c("Here are the columns in your file. Which one represents the crop code? \n ",names(freakoffi)," \n Write it here: \n "),fill=TRUE)
-		scn<-scan(,what="text",nmax=1)
-
-		cat(c("Here are the columns in your file. Which one represents the Nation (is going to be drop)? \n ",names(freakoffi)," \n Write it here: \n "),fill=TRUE)
-		nut<-scan(,what="text",nmax=1)
-
-		cat(c("Here are the columns in your file. Which one represents the Years? \n ",names(freakoffi)," \n Write it here: \n "),fill=TRUE)
-		epoch<-scan(,what="text",nmax=1)
-
-		cat(c("Here are the columns in your file. Which one represents the Official Yield? \n ",names(freakoffi)," \n Write it here: \n "),fill=TRUE)
-		harv<-scan(,what="text",nmax=1)
-
-		eurostat$STAT_CROP_NO<-freakoffi$as.name(scn)
-		eurostat$NUTS_CODE<-freakoffi$as.name(nut)
-		eurostat$YEAR<-freakoffi$as.name(epoch)
-		eurostat$OFFICIAL_YIELD<-freakoffi$as.name(harv)
-	}
-
-	cat("Provide SIMULATE yield database",fill=TRUE)
-	simuData<-file.choose()
-	write.table(gsub(gsub(scan(file=simuData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjSimu.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
 	prev <- read.csv("adjSimu.csv")
-	#if(msoffice == 1) prev<-read.table(file.choose(), header=T, sep=";") else prev<-read.csv(file.choose())
-
-	if (depth == "advanced" && depth == "adv-simul"){
-		#you are here only if the prevision tables are not in the format supposed... we are going to work on them
-		freakprev<-prev
-		cat(c("Here are the columns in your file. Which one represents the crop code? \n ",names(freakprev)," \n Write it here: \n "),fill=TRUE)
-		scn<-scan(,what="text",nmax=1)
-
-		cat(c("Here are the columns in your file. Which one represents the Nation (is going to be drop)? \n ",names(freakprev)," \n Write it here: \n "),fill=TRUE)
-		nut<-scan(,what="text",nmax=1)
-
-		cat(c("Here are the columns in your file. Which one represents the Years? \n ",names(freakprev)," \n Write it here: \n "),fill=TRUE)
-		epoch<-scan(,what="text",nmax=1)
-
-		cat(c("Here are the columns in your file. Which one represents the decade (phase of the year, if you like: it doesn't matter)? \n ",names(freakprev)," \n Write it here: \n "),fill=TRUE)
-		decad<-scan(,what="text",nmax=1)
+	#here ends the importing data issue, from here they are only structured
 
 
-		prev$CROP_NO<-freakprev$as.name(scn)
-		prev$NUTS_CODE<-freakpre$as.name(nut)
-		prev$YEAR<-freakoffi$pre(epoch)
-		prev$DECADE<-freakoffi$as.name(decad)
+actualYield<-eurostat
+relatedModel<-prev
+
+		if(any(names(actualYield)=="STAT_CROP_NO")&any(names(prev)=="CROP_NO")){names(actualYield)[names(actualYield)=="STAT_CROP_NO"]<-"CROP_NO"}else{
+		if(any(names(prev)=="STAT_CROP_NO")&any(names(eurostat)=="CROP_NO")){names(prev)[names(prev)=="STAT_CROP_NO"]<-"CROP_NO"}}
+
+		#standarizing Official Yield Names...trying to, at least
+		if(any(names(actualYield)=="official.yield")){names(actualYield)[names(actualYield)=="official.yield"]<-"OFFICIAL_YIELD"}
+		if(any(names(actualYield)=="Official yield")){names(actualYield)[names(actualYield)=="Official yield"]<-"OFFICIAL_YIELD"}
+		if(any(names(actualYield)=="Official.yield")){names(actualYield)[names(actualYield)=="Official.yield"]<-"OFFICIAL_YIELD"}
+		if(any(names(actualYield)=="official_yield")){names(actualYield)[names(actualYield)=="official_yield"]<-"OFFICIAL_YIELD"}
+		if(any(names(actualYield)=="Official _yield")){names(actualYield)[names(actualYield)=="Official_yield"]<-"OFFICIAL_YIELD"}
 
 
+
+	if(any(names(actualYield)=="CROP_NO")){
+		#choice of crop parameters
+		cat(c("OFFICIAL yield data contains information for the following CROPs:\n",unique(actualYield$CROP_NO),"\n Choose one:",fill=TRUE))
+		cropO<-scan(,nmax=1)
+		while(any(unique(actualYield$CROP_NO) == cropO) == FALSE){cat("point an existing one \n ")
+			cropO<-scan(,nmax=1)}
+			actualYield<-subset(actualYield,actualYield$CROP_NO == cropO)
+			}
+	if(any(names(prev)=="CROP_NO")){
+		cat(c("SIMULATED yield data contains information for the following CROPs:\n",unique(prev$CROP_NO),"\n Choose one:",fill=TRUE))
+		cropS<-scan(,nmax=1)
+		while(any(unique(prev$CROP_NO) == cropS) == FALSE){cat("point an existing one \n ")
+		cropS<-scan(,nmax=1)}
+		yieldPrev$saveCrop<-cropS
+		relatedModel<-subset(relatedModel, relatedModel$CROP_NO== cropS)
+	}else{cat(c("It seems you have one crop only: any data named CROP_NO found \n"))}
+
+	if(any(names(actualYield)=="NUTS_CODE")){
+		#choice of country
+		cat(c("Following countries are provided by the DataBases:\n","OFFICIAL:",levels(actualYield$NUTS_CODE),"\n SIMULATION:",levels(prev$NUTS_CODE),"(case sensitive) \n"),fill=TRUE)
+		cat(" OFFICIAL COUNTRY:")
+		countryO<-scan(,what="text",nmax=1)
+		while(any(levels(actualYield$NUTS_CODE) == countryO) == FALSE){cat("point an existing one \n ")
+		countryO<-scan(,what="text",nmax=1)}
+		actualYield<-subset(actualYield,actualYield$NUTS_CODE == countryO)
 	}
-
-	#choice of crop parameters
-	cat(c("OFFICIAL yield data contains information for the following CROPs:\n",unique(eurostat$STAT_CROP_NO),"\n Choose one:",fill=TRUE))
-	cropO<-scan(,nmax=1)
-	while(any(unique(eurostat$STAT_CROP_NO) == cropO) == FALSE){cat("point an existing one \n ")
-		cropO<-scan(,nmax=1)}
-	cat(c("SIMULATED yield data contains information for the following CROPs:\n",unique(prev$CROP_NO),"\n Choose one:",fill=TRUE))
-	cropS<-scan(,nmax=1)
-	while(any(unique(prev$CROP_NO) == cropS) == FALSE){cat("point an existing one \n ")
-	cropS<-scan(,nmax=1)}
-
-	#choice of country
-	cat(c("Following countries are provided by the DataBases:\n","OFFICIAL:",levels(eurostat$NUTS_CODE),"\n SIMULATION:",levels(prev$NUTS_CODE),"(case sensitive) \n"),fill=TRUE)
-	cat(" OFFICIAL COUNTRY:")
-	countryO<-scan(,what="text",nmax=1)
-	while(any(levels(eurostat$NUTS_CODE) == countryO) == FALSE){cat("point an existing one \n ")
-	countryO<-scan(,what="text",nmax=1)}
-	cat("\n SIMULATION COUNTRY")
-	countryS<-scan(,what="text",nmax=1)
-	while(any(levels(prev$NUTS_CODE) == countryS) == FALSE){cat("point an existing one \n ")
-	countryS<-scan(,what="text",nmax=1)}
-	#subsetting conforming the configuration set above
-	actualYield<-subset(eurostat, eurostat$STAT_CROP_NO == cropO & eurostat$NUTS_CODE == countryO)[,c(which(names(eurostat)=="YEAR"),which(names(eurostat)=="OFFICIAL_YIELD"))]
-	yieldPrev$actualYield<-actualYield[order(actualYield$YEAR),]
-	relatedModel<-subset(prev, prev$CROP_NO ==cropS & prev$NUTS_CODE == countryS)
+	if(any(names(prev)=="NUTS_CODE")){
+		cat("\n SIMULATION COUNTRY")
+		countryS<-scan(,what="text",nmax=1)
+		while(any(levels(prev$NUTS_CODE) == countryS) == FALSE){cat("point an existing one \n ")
+		countryS<-scan(,what="text",nmax=1)}
+		yieldPrev$saveCountry<-countryS
+		relatedModel<-subset(relatedModel, relatedModel$NUTS_CODE == countryS)
+	}else{cat(c("It seems you have one nation only: any data named NUTS_CODE found \n"))}
+		#subsetting conforming the configuration set above
+		actualYield<-actualYield[,c(which(names(actualYield)=="YEAR"),which(names(actualYield)=="OFFICIAL_YIELD"))]
+		yieldPrev$actualYield<-actualYield[order(actualYield$YEAR),]
 
 	#reading datas for suitable informations
 	currentYear<- max(unique(relatedModel$YEAR))
@@ -110,9 +115,9 @@ configure<-function(depth="base"){
 		yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
 	}
 
-	#save information for saveYieldSession()
-	yieldPrev$saveCrop<-cropS
-	yieldPrev$saveCountry<-countryS
+		#save information for saveYieldSession()
+
+
 
 }
 
@@ -292,6 +297,12 @@ library(leaps)
 library(HH)
 modSel <- function(){
 	tableXregression <-merge(yieldPrev$flatYield , yieldPrev$relatedModel , by="YEAR")
+	#clean this table, 0 columns are going to mess it up
+	coluClean<-function(cola){
+		if(min(tableXregression[,cola]) == max(tableXregression[,cola])){return(cola)}
+	}
+	dirtyCol<-lapply(X=seq(1,length(names(tableXregression))),FUN=coluClean)
+	tableXregression[,unlist(dirtyCol)]<-NULL
 	cat("Are you looking for a standard additive model? \n a models accounting for combined predictors. \n Which do you prefer? \n ")
 	cat(" 1. standard \n 2. enhanced \n ")
 	standardModel<-scan(,what="text",nmax=1)
@@ -333,21 +344,23 @@ modSel <- function(){
 }
 library(DAAG)
 
+library(pls)
 responseYield<-function(){
 	expYield <- yieldPrev$expYield
 	knoTime<-yieldPrev$breakPoint
 	if(max(knoTime$finish)== (yieldPrev$currentYear -1)){
 	trendMissing<-mean(knoTime$trend[which(knoTime$finish == max(knoTime$finish))])+yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )]} else {trendMissing <- yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )] }
 	cat(c(" \n \n \n RESPONSE \n \n ","As it is, the forecasted yield for year",yieldPrev$currentYear,"is",round(expYield$fit[1],2),"+/-",round(expYield$fit[1]-expYield$fit[2],2),"."),fill=TRUE)
-	cat(c("Confidence = 95% \n	\n CROSS-VALIDATION \n ",round(yieldPrev$CVmsRes[1],2),"as mean square error \n and ",round(yieldPrev$CVmsRes[2],2),"as R2."),fill=TRUE)
-	pcr_model<-pcr(OFFICIAL_YIELD ~ . ,data=yieldPrev$tableXregression[c(-14)],scale=TRUE,validation="LOO",ncomp=4)
+	cat(c("Confidence = 95% \n	\n CROSS-VALIDATION \n ",round(yieldPrev$CVmsRes[1],2),"as mean square error and ",round(yieldPrev$CVmsRes[2],2),"as R2."))
+	pcr_model<-pcr(OFFICIAL_YIELD ~ . ,data=yieldPrev$tableXregression,scale=TRUE,validation="LOO",ncomp=4)
 	pcr4<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=4)
 	pcr3<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=3)
-	cat(c("\n Principal Component Regression (PCR) predicted \n ",round(pcr4,2)," using 4 components \n ",round(pcr3,2)," using 3 components."))
+	yieldPrev$PCmodel<-pcr_model
+	cat(c("\n \n Principal Component Regression (PCR) predicted \n ",round(pcr4,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[8],2)," using 4 components \n ",round(pcr3,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[6],2)," using 3 components."))
 if(any(names(yieldPrev) == "due2trend")){cat(c("\n \n Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
 "),fill=TRUE)}
 cat(c("	\n
-	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2)),fill=TRUE)
+	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2)))
 
 	#crossVal plot
 	#acquire loocv single data
@@ -355,7 +368,7 @@ cat(c("	\n
 	#keep out Year and cvpred
 	crValPre<-data.frame(YEAR=motoCross$YEAR,pred=motoCross$cvpred)
 	respoPlot<- ggplot(crValPre)
-	cat(c("Plotted:\n GREEN: Predicted yield in Cross Validation \n RED: Data on which models are regressed"),fill=TRUE)
+	cat(c(" \n Plotted:\n GREEN: Predicted yield in Cross Validation \n RED: Data on which models are regressed"),fill=TRUE)
 	if(any(names(yieldPrev) == "due2trend")){
 		untrend<-yieldPrev$flatYield
 		yieldPrev$omniYield<-merge(crValPre,yieldPrev$due2trend,by="YEAR")
@@ -368,11 +381,13 @@ cat(c("	\n
 	crValPre<-rbind(crValPre,c(yieldPrev$currentYear,expYield$fit[1]))
 	respoPlot<-respoPlot+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red",size=1.5,data=yieldPrev$flatYield)+geom_line(aes(x=YEAR,y=pred,group=1),color="green",data=crValPre)
 	plot(respoPlot)
+	#dev.new()
+	#plot(yieldPrev$PCmodel,line=1)
 }
 
 saveYieldSession<- function(){
 	attach(yieldPrev)
-	save(list=ls(yieldPrev),file=paste(Sys.Date(),saveCountry,saveCrop,".RData",sep=""))
+	save(list=ls(yieldPrev),file=paste(Sys.Date(),".RData",sep=""))
 	cat(c("Session saved in ",paste(Sys.Date(),saveCountry,saveCrop,".RData",sep=""),". \n Use loadYieldSession() to restore in future sessions."),fill=TRUE)
 }
 loadYieldSession<-function(){

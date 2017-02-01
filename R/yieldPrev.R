@@ -41,8 +41,8 @@ configure<-function(depth="base"){
 	#here ends the importing data issue, from here they are only structured
 
 
-actualYield<-eurostat
-relatedModel<-prev
+actualYield<-unique(eurostat)
+relatedModel<-unique(prev)
 
 		if(any(names(actualYield)=="STAT_CROP_NO")&any(names(prev)=="CROP_NO")){names(actualYield)[names(actualYield)=="STAT_CROP_NO"]<-"CROP_NO"}else{
 		if(any(names(prev)=="STAT_CROP_NO")&any(names(eurostat)=="CROP_NO")){names(prev)[names(prev)=="STAT_CROP_NO"]<-"CROP_NO"}}
@@ -144,7 +144,7 @@ checkTrends<-function(){
 		yieldPrev$flattyn<-scan(,what="text",nmax=1)}
 #	cat(c("The time serie is ",(unique(max(flatYield$YEAR))-unique(min(flatYield$YEAR))), "years long, since",unique(min(flatYield$YEAR)),"to",unique(max(flatYield$YEAR))),fill=TRUE)
 	#checking if there are troubles in the official data series.
-	if(length(c(setdiff(seq(min(flatYield$YEAR),max(flatYield$YEAR)),flatYield$YEAR),flatYield$YEAR[duplicated(flatYield$YEAR)])) == 0) cat("") else cat(c("By the way there are \n MISSING:",setdiff(seq(min(flatYield$YEAR),max(flatYield$YEAR)),flatYield$YEAR)," \n REPLICATED: ",flatYield$YEAR[duplicated(flatYield$YEAR)]))
+	if(length(c(setdiff(seq(min(flatYield$YEAR),max(flatYield$YEAR)),flatYield$YEAR),flatYield$YEAR[duplicated(flatYield$YEAR)])) == 0) cat("") else cat(c("By the way there are \n MISSING:",setdiff(seq(min(flatYield$YEAR),max(flatYield$YEAR)),flatYield$YEAR)," \n REPLICATED: ",flatYield$YEAR[duplicated(flatYield$YEAR)]," \n"))
 	detach(yieldPrev)
 }
 
@@ -310,7 +310,7 @@ modSel <- function(){
 		cat(" 1. standard \n 2. enhanced \n ")
 		standardModel<-scan(,what="text",nmax=1)}
 	if(standardModel == "1" | standardModel == "standard"){
-	allSign <- regsubsets(OFFICIAL_YIELD~.,data=tableXregression[,c(-1)],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
+	allSign <- regsubsets(OFFICIAL_YIELD~.,data=tableXregression[,c(-which(names(tableXregression)=="YEAR"))],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
 	if(standardModel == "2" | standardModel == "enhanced"){
 	allSign <- regsubsets(OFFICIAL_YIELD~.^2+.,data=tableXregression[,c(-1)],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
 	#renaming predictors with numbers
@@ -383,6 +383,7 @@ cat(c("	\n
 	plot(respoPlot)
 	#dev.new()
 	#plot(yieldPrev$PCmodel,line=1)
+	valiTrend()
 }
 
 saveYieldSession<- function(){
@@ -397,22 +398,42 @@ loadYieldSession<-function(){
 	cat(c("Session in oldYieldSession loaded \n "),fill=TRUE)
 }
 
-sewedCheck<-function(){
-#save involved data that will be restored later
-yieldPrev$bckflatYield <- yieldPrev$flatYield
-yieldPrev$breakPoint
-#refresh previously edited data as original
-yieldPrev$flatYield<-yieldPrev$actualYield
-#go throught the whole process by itself
+valiTrend<-function(){
+	#obtaind clean informations for where the trend doesn't exist
+	train<-subset(yieldPrev$due2trend,yieldPrev$due2trend$trended == 0)
+	train<-merge(train,yieldPrev$actualYield, by="YEAR")
+	train$trended<-NULL
+	train<-merge(train,yieldPrev$relatedModel, by="YEAR")
+	#getting a model only based on untrend data
+	noTrendMod<-lm(as.formula(yieldPrev$model_formula),data=train)
+	#test set
+	test<-subset(yieldPrev$due2trend,yieldPrev$due2trend$trended != 0)
+	test<-merge(test,yieldPrev$relatedModel,by="YEAR")
+	test$trended<-NULL
+	solution<-subset(yieldPrev$due2trend,yieldPrev$due2trend$trended != 0)
+	solution<-merge(solution,yieldPrev$flatYield,by="YEAR")
+	solution$trended<-NULL
 
-#get the desired datas
+	woTrend<-predict(noTrendMod,newdata=test,se.fit=TRUE,type="response",level=0.95,interval="prediction")
 
-#restore all
+	predCfg<-merge(solution,yieldPrev$omniYield,by="YEAR")
+	predCfg$clean<-woTrend$fit[,1]
+	DnoTREND<-predCfg$YIELD-predCfg$pred
+	DwTREND<-predCfg$OFFICIAL_YIELD-predCfg$clean
 
-	}
+	sigNO<-sqrt(mean((DnoTREND - mean(DnoTREND))^2))
+	sigW<-sqrt(mean((DwTREND - mean(DwTREND))^2))
+	if(sigNO < sigW){cat(c("NOTE that the pointed Trends are afflicted by some kind of problem, a BETTER FITting model can be obtained WITHout any TREND removal"))}
+	asimErr<-skewness(woTrend$fit[,1]-solution$OFFICIAL_YIELD)
+	predError<-woTrend$fit[,1]-solution$OFFICIAL_YIELD
+	sigma<-sqrt(mean((predError - mean(predError))^2))
+	danger<-asimErr/sigma
+	if(danger >= 2.6){cat(c("\n ADVICE: \n The marked trend related dynamics don't fit with the data! \n "))}
+}
 
 virgilio<-function(){
-	suppressWarnings(configure())
+	if(any(names(yieldPrev)==actualYield)){}else{
+	suppressWarnings(configure())}
 	suppressWarnings(checkTrends())
 	while(yieldPrev$flattyn == "y"){
 		suppressWarnings(breakTrends())

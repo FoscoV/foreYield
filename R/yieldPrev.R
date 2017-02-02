@@ -423,16 +423,28 @@ valiTrend<-function(){
 
 	sigNO<-sqrt(mean((DnoTREND - mean(DnoTREND))^2))
 	sigW<-sqrt(mean((DwTREND - mean(DwTREND))^2))
-	if(sigNO < sigW){cat(c("NOTE that the pointed Trends are afflicted by some kind of problem, a BETTER FITting model can be obtained WITHout any TREND removal"))}
+	if(sigNO < sigW){cat(c("NOTE that the pointed Trends are afflicted by some kind of problem, a BETTER FITting model can be obtained WITHout any TREND removal. \n"))}
 	asimErr<-skewness(woTrend$fit[,1]-solution$OFFICIAL_YIELD)
 	predError<-woTrend$fit[,1]-solution$OFFICIAL_YIELD
 	sigma<-sqrt(mean((predError - mean(predError))^2))
 	danger<-asimErr/sigma
 	if(danger >= 2.6){cat(c("\n ADVICE: \n The marked trend related dynamics don't fit with the data! \n "))}
+	if(sigNO < sigW|danger >= 2.6){cat(c("Do you want to reset the trend marked and proceed again? (y/n) \n"),fill=T)
+		reBea<-scan(,what="text",nmax=1)
+		while(reBea != "y" & reBea != "n"){
+			cat("answer y or n")
+			reBea<-scan(,what="text",nmax=1)
+		}
+		if(reBea == "y"){
+			#reset trend's stuff
+			rm(list=c("breakPoint","flatYield","due2trend","friendShip","flattyn","safeTrend","yieldTrend","flatOff","tableXregression","model_formula","CVmsRes","expYield","omniYield","modelLM","PCmodel"),envir=yieldPrev)
+			#then, start again
+			virgilio()}
+	}
 }
 
 virgilio<-function(){
-	if(any(names(yieldPrev)==actualYield)){}else{
+	if(any(names(yieldPrev)== "actualYield")){}else{
 	suppressWarnings(configure())}
 	suppressWarnings(checkTrends())
 	while(yieldPrev$flattyn == "y"){

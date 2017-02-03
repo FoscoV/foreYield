@@ -5,7 +5,13 @@
 Some adjustment and mainly prints the results
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+At this stage, the work is done and the results are printed.
+You can read information about the prediction, the Cross Validation results (plotted in detail).
+At this stage a PCA regression is processed (by itself) and it's results are printed.
+
+So that you have  for comparison:prediction,CV,PCR,TimeSeriesForecast.
+
+The results are based on the data as the came out of the un-trending process so that have to be added for the trend effects. This is done (explicitly) for the predicted one only. All the others have to summed to the current trend by hand (if you prefer them to your own result after the comparison)
 }
 \usage{
 responseYield()

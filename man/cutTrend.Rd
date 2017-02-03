@@ -5,7 +5,9 @@
 Actually do the cutting of trends, not simply setting it
 }
 \description{
-Two input parameters: It receives the edges to cut at.
+Two input parameters: It receives the edges to cut at: "begin" and "end".
+
+The resulting trend are saved for their contribution to each year yield. If a trend ends before the time series data, it's results are preserved (and not increased) in the following years.
 
 }
 \usage{

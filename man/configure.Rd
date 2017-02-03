@@ -9,8 +9,6 @@ import all the data needed
 }
 \usage{
 configure()
-#never tested:
-configure(depth="advanced")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -19,7 +17,21 @@ configure(depth="advanced")
 }
 }
 \details{
-In normal mode, you ha only to follow the screen instruction. If you are trying the advanced version, it is supposed to allow importing dataset different than the ones used since now. Not yet tested!
+In normal mode, you ha only to follow the screen instruction.
+Here are supported two database structures.
+
+Wide table split in two files: an official one and a simulated one.
+
+Long table where all the data are stored in one single file.
+
+More combination of Long-Wide and single-two(-more?) may get  supported in future releases.
+
+Please note that some column name are required (and case sensitive):
+YEAR,DECADE,NUTS_CODE.
+
+OFFICIAL_YIELD can be coerced to OFFICIAL_YIELD from an amount of writings (cases, underscore alternatives).
+
+It supports only the .csv input format, please note that it get rid of several kind of csv-like standards. Anyway it will fail if , (comma) is used as decimal separator; I strongly suggest to adopt the standard . (dot) .
 }
 \value{
 %%  ~Describe the value returned

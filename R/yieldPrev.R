@@ -5,7 +5,6 @@
 ###CONFIGURATION
 configure<-function(depth="base"){
 	cat(c("Do you have a single file database or official and simulation split in two different files? \n 1.single file \n 2. double files \n (answer by numer)"),fill=TRUE)
-	numFiles<-NULL
 	numFiles<-scan(,nmax=1)
 	while(numFiles != 1 & numFiles != 2){cat(c(" 1 and 2 are the only answers supported  \n 1.single file \n 2. double files \n "))
 		numFiles<-scan(,nmax=1)
@@ -71,11 +70,11 @@ relatedModel<-unique(prev)
 		cropS<-scan(,nmax=1)}
 		yieldPrev$saveCrop<-cropS
 		relatedModel<-subset(relatedModel, relatedModel$CROP_NO== cropS)
-	}else{cat(c("It seems you have one crop only: any data named CROP_NO found \n"))}
+	}else{cat(c("It seems you have one crop only: no data named CROP_NO found \n"))}
 
 	if(any(names(actualYield)=="NUTS_CODE")){
 		#choice of country
-		cat(c("Following countries are provided by the DataBases:\n","OFFICIAL:",levels(actualYield$NUTS_CODE),"\n SIMULATION:",levels(prev$NUTS_CODE),"(case sensitive) \n"),fill=TRUE)
+		cat(c("The following countries are provided in the DataBases:\n","OFFICIAL:",levels(actualYield$NUTS_CODE),"(case sensitive) \n"),fill=TRUE)
 		cat(" OFFICIAL COUNTRY:")
 		countryO<-scan(,what="text",nmax=1)
 		while(any(levels(actualYield$NUTS_CODE) == countryO) == FALSE){cat("point an existing one \n ")
@@ -83,13 +82,13 @@ relatedModel<-unique(prev)
 		actualYield<-subset(actualYield,actualYield$NUTS_CODE == countryO)
 	}
 	if(any(names(prev)=="NUTS_CODE")){
-		cat("\n SIMULATION COUNTRY")
+		cat(c("The following countries are provided in the DataBases: \n SIMULATION:",levels(prev$NUTS_CODE)))
 		countryS<-scan(,what="text",nmax=1)
 		while(any(levels(prev$NUTS_CODE) == countryS) == FALSE){cat("point an existing one \n ")
 		countryS<-scan(,what="text",nmax=1)}
 		yieldPrev$saveCountry<-countryS
 		relatedModel<-subset(relatedModel, relatedModel$NUTS_CODE == countryS)
-	}else{cat(c("It seems you have one nation only: any data named NUTS_CODE found \n"))}
+	}else{cat(c("It seems you have one nation only: no data named NUTS_CODE found \n"))}
 		#subsetting conforming the configuration set above
 		actualYield<-actualYield[,c(which(names(actualYield)=="YEAR"),which(names(actualYield)=="OFFICIAL_YIELD"))]
 		yieldPrev$actualYield<-actualYield[order(actualYield$YEAR),]
@@ -97,29 +96,27 @@ relatedModel<-unique(prev)
 	#reading datas for suitable informations
 	currentYear<- max(unique(relatedModel$YEAR))
 	yieldPrev$currentYear <- currentYear
-	currentDecade<- max(subset(relatedModel,relatedModel$YEAR==currentYear)$DECADE)
-	cat(c("It seems forecasting the year",currentYear,"with data till the ",currentDecade,"th decade"),fill=TRUE)
-	cat(c("Do you want to change Decade assumption? \n "))
-	changeYD<-scan(,what="text",nmax=1)
-	while(changeYD != "y" & changeYD != "n"){
-		cat("answer y or n")
+	if(any(names(prev)=="DECADE")){
+		currentDecade<- max(subset(relatedModel,relatedModel$YEAR==currentYear)$DECADE)
+		cat(c("It seems forecasting the year",currentYear,"with data till the ",currentDecade,"th decade"),fill=TRUE)
+		cat(c("Do you want to change Decade assumption? \n "))
 		changeYD<-scan(,what="text",nmax=1)
-	}
-	if(changeYD == "n"){
-		yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
-	}
-	if(changeYD == "y"){
-		cat(c("Digit desired Decade"))
-		#suggest: loop checking that the desired decade is lower than the last one...
-		currentDecade<-scan(,nmax=1)
-		yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
-	}
-
-		#save information for saveYieldSession()
-
-
-
+		while(changeYD != "y" & changeYD != "n"){
+			cat("answer y or n")
+			changeYD<-scan(,what="text",nmax=1)
+		}
+		if(changeYD == "n"){
+			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
+		}
+		if(changeYD == "y"){
+			cat(c("Digit desired Decade"))
+			#suggest: loop checking that the desired decade is lower than the last one...
+			currentDecade<-scan(,nmax=1)
+			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
+		}
+	}else{yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]}
 }
+		#save information for saveYieldSession()
 
 
 
@@ -285,9 +282,6 @@ cutTrend<-function(inizio,fine){
 		}
 	#now we have to grant no more safeTrend will influence further trends!
 	yieldPrev$safeTrend<- NULL
-
-
-	#meet flatYield and preflat (now postFlat,but...by the way, i like that name!)
 
 	yieldPrev$flatYield$OFFICIAL_YIELD<-yieldPrev$actualYield$OFFICIAL_YIELD - yieldPrev$due2trend$trended
 }

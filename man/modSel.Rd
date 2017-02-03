@@ -5,7 +5,8 @@
 Interactive choice of the model you like more
 }
 \description{
-the main statistical stuff is here
+Under the bonnet it does some things more.
+It proceed with the Cross validation and the prediction for the target year.
 }
 \usage{
 modSel()

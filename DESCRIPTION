@@ -5,6 +5,8 @@ Version: 1.0
 Date: 2017-01-25
 Author: Fosco Vesely
 Maintainer: Fosco Vesely <fosco@tana.it>
-Depends:tseries,forecast,ggplot2,MASS,leaps,HH,DAAG,tidyr,lps
+Depends:tseries,forecast,ggplot2,MASS,leaps,HH,DAAG,tidyr,pls
 Description: Using past yield and model predictors, forecast the yield resulting for the current (the last) year (simulated year). Nothing new but the interface "virgilio()" providing easy use without any (almost) knowledge of R
-License: Development stage, no licensing anybody to anything
+License: GPL2
+Suggests: R.rsp
+VignetteBuilder: R.rsp

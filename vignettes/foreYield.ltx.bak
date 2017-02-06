@@ -1,0 +1,266 @@
+%VignetteIndexEntry{foreYield}
+%VignetteEngine{R.rsp::tex}
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{hyperref,xcolor}
+\hypersetup{hidelinks}
+\usepackage{amssymb}
+\usepackage{mdframed}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{wrapfig}
+\usepackage{caption}
+\usepackage[section]{placeins}
+\usepackage{lmodern}
+\usepackage{fourier}
+\usepackage{layaureo}
+\usepackage{listings}
+\lstset{language=R,frame=single,breaklines=true,postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},captionpos=b}
+
+\author{Fosco Mattia Vesely}
+\title{foreYield}
+\date{}
+\begin{document}
+
+\tableofcontents
+\section{Introduzione}
+Il pacchetto R \lstinline!foreYield! è disegnato per fornire un interfaccia utente interattiva che accompagni l'utilizzatore attraverso i vari passaggi connessi alla regressione dei risultati di simulazione per la previsione delle rese agricole.
+La regressione richiede la disponibilità delle simulazioni effettuate per gli anni passati ed i relativi dati effettivi. Viene prevista la resa dell'anno corrente in 
+considerazione delle simulazioni aggiornate dei regressori. Le funzioni di analisi statistica dei dati sono già disponibili in R, ma non lo è l'interfaccia e la lineare gestione dei passaggi successivi: l'impiego di \lstinline!foreYield! agevola l'iter emancipando l'utente dagli aspetti di programmazione richiesti.
+
+Il presente documento è destinato ad illustrare all'utente la modalità d'uso del programma. Per chi intendesse vagliare gli aspetti più tecnici si rimanda alla documentazione del pacchetto, disponibile su GitHub.
+\section{Installazione}
+Disponendo di un ambiente R già installato\footnote{per l'installazione si può fare riferimento al \href{http://cran.r-project.org/}{sito ufficiale del progetto CRAN}} è possibile installare foreYield con i comandi forniti in listing \ref{instR}.
+\begin{lstlisting}[caption={Procedura d'installazione entro R},label=instR]
+install.packages("remotes") # nel caso non sia gia' installato
+library(remotes)
+remotes::install_github(FoscoV/foreYield)
+\end{lstlisting}
+Le istruzioni contenute in listing \ref{instR} provvedono automaticamente all'installazione della versione più recente di \lstinline!foreYield! (od al suo aggiornamento) e delle relative dipendenze.
+Il pacchetto \lstinline!foreYield! è basato su strumenti di analisi dati forniti in altri pacchetti. La struttura del pacchetto anzichè uno script è stata adottata, oltre che per la semplificazione nella gestione delle versioni in vista di futuri aggiornamenti, per la più comoda gestione delle dipendenze.
+\section{Note d'uso}
+Sono di seguito riportati i dettagli relativi alle diverse fasi dell'iter di stima.
+Un volta effettuata l'installazione per l'avvio della procedura è sufficiente, in una sessione di \lstinline!R!, l'impiego delle istruzioni di cui in listing \ref{startFY}.
+\begin{lstlisting}[caption={istruzioni per l'avvio di \lstinline!foreYield!},label=startFY]
+#caricamento delle librerie e dipendenze
+library(foreYield)
+#avvio della procedura guidata completa
+virgilio()
+\end{lstlisting}
+Una volta avviata la funzione principale secondo le indicazioni in listing \ref{startFY} il resto della procedura viene affrontato interattivamente attraverso domande poste all'utente, con modalità esemplarmente riportate in figura \ref{fig:conf}.
+\section{Importazione dati}
+La procedura di importazione dei dati da un database esterno è interattivamente svolta da \lstinline!foreYield!.
+\begin{wrapfloat}{figure}{r}{0pt}
+\includegraphics[width=0.5\textwidth]{confSplash}
+\caption{L'iter di importazione e configurazione dei dati. Le frecce rosse indicano i punti in cui è stato digitato un input}
+\label{fig:conf}
+\end{wrapfloat}
+L'interfaccia richiede all'utente di indicare la posizione dei file \lstinline!csv! contenenti i dati da analizzare, così come informazioni riguardanti la gestione di altri dati supportati.
+
+Per approfondimento sulla formattazione dei dati, si faccia riferimento alla seguente sezione \ref{ssec:dbstr}.
+\subsection{Struttura del database}\label{ssec:dbstr}
+Attualmente sono supportati input in formato csv.
+I diversi standard a cui i csv possono fare riferimento sono autonomamente gestiti dal programma. L'unico requisito di formato è che il separatore delle cifre decimali non sia "," bensì "." onde evitare conflitti con il separatore di colonne. 
+
+I database sono file strutturati in righe e colonne. I  nomi delle colonne ne indicano i contenuti. Alcune tipologie di dati richiedono uno specifico nome della colonna. Questa limitazione è resa necessaria dall'importanza di poter considerare la più ampia varietà di nomi di indicatori possibile senza imporre lunghe configurazioni  dei parametri.
+Di seguito sono riportate le colonne il cui nome è riservato (ed obbligatorio per l'attribuzione).
+\begin{description}
+\item[YEAR] contiene l'anno cui la riga viene attribuita. Data la tipologia di operazioni svolte dal programma, questa colonna è \textsc{obbligatoria}.
+\item[OFFICIAL\_YIELD] Contiene i valori reali di raccolto per l'anno in YEAR. Data la varietà di nomenclatura, sono riconosciute alcune varianti sul tema: \begin{itemize}
+\item official.yield 
+\item Official yield 
+\item Official.yield 
+\item official\_yield
+\item Official\_yield
+\end{itemize} vengono tutte riconosciute. Questa colonna è \textsc{obbligatoria}
+\item[DECADE] rappresenta lo stadio della stagione cui i regressori fanno riferimento. Questo campo è facoltativo. (si veda \ref{impMore})
+\item[NUTS\_CODE] rappresenta la nazione o l'area di riferimento. Questo campo è facoltativo. (si veda \ref{impMore})
+\item[CROP\_NO] identifica la tipologia di coltura all'interno del database; la variante STAT\-\_CROP\-\_NO è riconosciuta. Questo campo è facoltativo. (si veda \ref{impMore})
+\end{description}
+
+Tutti i nomi non menzionati sono disponibili per essere il nome di un regressore. Il numero di questi ultimi non è limitato in alcun modo dal programma.
+
+Sono supportate due strutture di database, tali da incontrare le casistiche più frequentemente applicate.
+All'avvio viene richiesto di scegliere tra:
+\begin{enumerate}
+\item single file
+\item two files
+\end{enumerate}
+La scelta tra le due opzioni è unicamente legata alla struttura dei dati alla cui analisi di è interessati, dettagliate indicazione sulle due formattazioni  sono riportate nei paragrafi \ref{sinFile} e \ref{twoFile}.
+
+Ferme restando le osservazioni sui nomi dei campi, il programma non è sensibile all'ordine.
+
+\subsubsection{Database csv in un unico file}\label{sinFile}
+Questa opzione importa i dati raccolti all'interno di un singolo file con una struttura del tipo riportato in tabella \ref{tab:singleFile}.
+\begin{table}[h]
+\centering
+\caption{Struttura del database \lstinline!csv! in un singolo file}
+\label{tab:singleFile}
+\begin{tabular}{llccr}
+\toprule
+YEAR&DECADE&INDICATOR\_CODE&INDICATOR\_VALUE&OFFICIAL\_YIELD\\
+\midrule
+anno1&$\dots{}$&regressore n°1&valore&raccolto1\\
+anno1&$\dots{}$&regressore n°2&valore&raccolto1\\
+$\dots{}$&$\dots{}$&$\dots{}$&$\dots{}$&$\dots{}$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+La struttura "long table" viene automaticamente gestita. Essa, tuttavia, è basata sul nome delle colonne \lstinline!INDICATOR_CODE! e \lstinline!INDICATOR_VALUE!, rispettivamente per il nome del regressore ed il rispettivo valore. Questi nomi sono \textsc{obbligatori} per questa tipologia di file.
+\subsubsection{Database csv in due file}\label{twoFile}
+Questa opzione importa due distinti database, uno contenente i dati statistici ufficiali(tabella \ref{tab:eurostat} ed uno i dati delle simulazioni (tabella \ref{tab:prev}).
+\begin{table}[h]
+\centering
+\caption{Struttura del database dei dati ufficiali. Solo le prime due colonne sono obbligatorie}
+\label{tab:eurostat}
+\begin{tabular}{ll|rr|c}
+\toprule
+YEAR&OFFICIAL\_YIELD&NUTS\_CODE&CROP\_NO&colonne non considerate\\
+\midrule
+anno1&raccolto1&sigla&codice&$\dots{}$\\
+annno2&raccolto2&sigla&codice&$\dots{}$\\
+$\dots{}$&$\dots{}$&$\dots{}$&$\dots{}$&$\dots{}$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Struttura del database dei dati di simulazione, la colonna YEAR è obbligatoria}
+\label{tab:prev}
+\begin{tabular}{ll|rr|c}
+\toprule
+YEAR&DECADE&NUTS\_CODE&CROP\_NO&altre colonne come regressori\\
+\midrule
+anno1&numero1&sigla&codice&numero1\\
+annno2&numero1&sigla&codice&numero2\\
+$\dots{}$&$\dots{}$&$\dots{}$&$\dots{}$&$\dots{}$\\
+\bottomrule
+\end{tabular}
+\end{table}
+Il formato a due file presuppone una strutturazione "wide" della tabella, nella quale i regressori sono disposti ciascuno in una propria colonna.
+\subsection{Altre informazioni contenute nei database}\label{impMore}
+Nel corso dell'importazione dei dati viene richiesto, nel caso siano presenti, informazioni riguardanti la coltura, la nazione e la decade di riferimento.
+Le richieste sono svolte al fine di isolare i dati in analisi dai dati inclusi nel database ma non rilevanti per l'analisi corrente.
+Per ciascuna delle interrogazioni è possibile dare risposte differenti per i dati ufficiali e per quelli di simulazione. Questa possibilità consente all'utilizzatore di impiegare diverse varianti di configurazione dei modelli distinguendole in base a codici colturali o per nazione.
+
+NUTS\_CODE e CROP\_NO non sono obbligatori. Infatti database già modificati per essere limitati ad una sola coltura e/o ad un solo paese possono essere processati senza che siano dotati di queste informazioni. Data la peculiarità di siffatti database, la mancanza di questi campi viene segnalata durante la fase di importazione.
+
+La decade, se presente, può essere selezionata, anche se di default viene suggerita la più avanzata. 
+
+L'anno per il quale viene effettuata la previsione di resa è assunto automaticamente essere il più recente, questa opzione non è configurabile. Gli anni precedenti all'ultimo sono, in ogni caso, oggetto di validazione crociata e pertanto previsti e confrontati con il risultato reale in maniera automatica.
+\section{Trend}
+I dati ufficiali dei raccolti possono essere composti da due differenti componenti: una climatica (considerata dai modelli) ed una tecnologica (non considerata dai modelli).
+
+L'adozione di una lunga serie di dati, seppur più suscettibile di comprendere fenomeni esogeni ai regressori, offre una maggiore validità statistica mantenendo il numero di osservazioni (gli anni considerati) nettamente maggiore del numero dei regressori.
+
+Per una corretta calibrazione del modello regressivo dei dati simulati dai modelli è necessario separare le componenti climatiche e tecnologiche.
+L'interfaccia fornisce una stima della probabilità che i dati ufficiali contengano un trend. È importante notare che tale stima è fondata sulla sola analisi dei valori di OFFICIAL\_YIELD e non discerne tra le due componenti. L'individuazione della componente tecnologica avviene sulla base della conoscenza dell'utilizzatore delle condizioni del settore agricolo in valutazione ma viene coadiuvata da una rappresentazione grafica di OFFICIAL\_YIELD nel corso degli anni, analoga a quanto in figura \ref{offYield}.\\
+\begin{figure}
+\centering
+\includegraphics[width=0.4\linewidth]{offYield}
+\caption{Un esempio dei grafici rappresentativi dell'andamento delle rese negli anni.\\
+Con regressioni (lineari e locali) per agevolarne l'interpretazione all'utente.}
+\label{offYield}
+\end{figure}
+L'utilizzatore viene interrogato circa la sua intenzione di sottrarre una componente tecnologica dai raccolti.
+Una risposta affermativa alla domanda avvia la procedura per l'individuazione e quantificazione della componente tecnologica. Tuttavia è lecito ritenere che il trend non sia significativo né dovuto a fattori esterni e procedere direttamente con la selezione del modello regressivo od interrompere durante le fasi della rimozione .
+ La presenza di un trend, in sé non ostacola la regressione, purchè i regressori lo possano spiegare.
+\subsection{Eliminazione di una componente tecnologica}
+Mentre le componenti climatiche sono considerate dai modelli, gli effetti tecnologici non vi sono inclusi e devono essere sottratti per garantire l'esatta regressione dei dati.
+Per agevolare l'individuazione della sola componente tecnologica, viene prodotto un grafico in cui sono riportati sia i raccolti sia i regressori, normalizzati ciascuno in base alla propria media (figura \ref{remTrend}).\\
+Qualora si riscontri una spiegazione del trend assoluto di OFFICIAL\_YIELD in base agli andamenti dei regressori, la procedura può essere interrotta\footnote{Un esempio di questa condizione potrebbe essere la condizione che si ritrova in figura \ref{remTrend} dove i regressori manifestano trend anche maggiori di OFFICIAL\_YIELD}.
+In caso contrario è possibile selezionare gli anni interessati dal trend indicandone i limiti inferiore e superiore sull'asse temporale.
+
+L'intervallo considerato viene automaticamente raffigurato sul grafico e deve essere confermato (si veda la figura \ref{remTrend}.\\
+\begin{figure}
+\centering
+\subfloat[][Confronto dei trend di resa e dei regressori.Il periodo sul cui trend si opera  è evidenziato in rosa. \label{remTrend}]{\includegraphics[width=0.47\linewidth]{remTrend}}\qquad
+\subfloat[][Resa attribuibile a fattori climatici a seguito dell'elaborazione\label{deTrend}]{\includegraphics[width=0.47\linewidth]{deTrend}} \\
+%\subfloat[][Componente di trend tecnologico\label{tecTrend}]{\includegraphics[width=0.4\pagewidth]{tecTrend}
+\caption{Alcuni grafici di esempio delle fasi di rimozione dei trend}
+\label{fig:utrend}
+\end{figure}
+
+\paragraph*{Preservare la componente climatica}
+
+È possibile escludere la \textsl{sola} componente tecnologica confrontando il trend di OFFICIAL\_YIELD con quello di uno o più regressori selezionabili, il cui trend medio è considerato rappresentativo della componente climatica del trend di OFFICIAL\_YIELD.\\
+L'adozione di questa soluzione consente di rimuovere la componente esogena senza ricorrere all'estrema decisione di imporre un trend nullo.
+All'utente è sottoposta una tabella in cui scegliere i regressori che meglio ritiene potrebbero rappresentare la componente climatica del trend.
+
+Si osservi che la selezione di un singolo regressore porta, in seguito alla rimozione della componente tecnologica del trend, ad avere lo stesso trend lineare\footnote{solo entro l'arco di tempo precedentemente selezionato} tra il regressore ed i valori corretti di OFFICIAL\_YIELD. Qualora vengano selezionati almeno due coefficienti, viene assunta come rappresentativa del trend climatico la media tra i loro andamenti. Non preoccupi particolarmente il semplice fatto che, in seguito, i coefficienti qui selezionati compaiano entro i modelli di regressione: la loro natura di regressori significativi li ha eletti secondo criteri affini.
+
+
+Qualora gli andamenti della serie storica lo  esigano, è possibile sottrarre più di una componente tecnologica da diversi intervalli temporali.
+
+Si noti che la sottrazione di un trend tecnologico esauritosi prima della fine della serie storica sottende implicitamente che la componente tecnologica sia rimasta costantemente presente in seguito ed è pertanto automaticamente sottratta.
+I trend sottratti sono considerati aventi andamento lineare, in ragione della dinamica di realizzazione del trend che risulta legata alla diffusione di pratiche agricole e che pertanto si caratterizza più ragionevolmente per un andamento geometrico.
+
+A seguito della rimozione del trend viene ripresentato il grafico di cui in figura \ref{offYield} i cui dati sono però modificati, come	 osservabile dal confronto tra le figure \ref{offYield} e \ref{deTrend}.
+
+\subsection{Validazione della rimozione dei trend}
+La rimozione dei trend tecnologici da OFFICIAL\_YIELD costituisce un alterazione di valori reali necessaria per una attenta calibrazione del modello regressivo.
+Tali modifiche vengono validate attraverso la verifica dei due seguenti aspetti di consistenza dei dati così risultanti. Eventuali discontinuità sono segnalate nel report finale.
+
+\paragraph*{Endogenità dei residui}
+Creando un modello regressivo previsionale dei valori di OFFICIAL\_YIELD basato sui componenti per i quali non è segnalato un trend, vengono previsti i valori di OFFICIAL\_YIELD risultanti dalla rimozione dei trend trecnologici. Viene valutata la curtosi della distribuzione degli errori rispetto ai risultati della sottrazione. Qualora fosse significativa, è interpretabile come l'indicazione che i dati impiegati per la regressione previsionale siano affetti da un agente esterno ai regressori. Quest'ultimo può essere sia un trend tecnologico non individuato sia il frutto di una infondata sottrazione di trend.
+
+\paragraph*{Esogenità dei trend rimossi}
+Viene verificato che la rimozione dei trend tecnologici effettuata non aumenti lo scarto quadratico medio delle previsioni confrontando i valori di Cross 
+Validation con le stime effettuate con lo stesso modello\footnote{Si ricordi che questa validazione viene segnalata in conclusione: il modello impiegato sarà quello selezionato nella ventura sezione \ref{ssec:modSel}} in base ai dati per i quali non è stato indicato un trend.
+\section{Selezione del modello}\label{ssec:modSel}
+Una volta conclusa la normalizzazione tecnologica dei valori di OFFICIAL\_YIELD, questi vengono sottoposti ad analisi regressiva con diverse possibili formule di regressione lineare. 
+
+\lstinline!foreYield! consente la creazione di regressori ottenuti dalla combinazione di due fattori regressivi. I modelli regressivi così ottenuti conseguono, solitamente, una maggiore accuratezza. Tuttavia questa pratica (denominata "enhanced" entro il programma) non è standard ed in funzione della destinazione della previsione può essere conveniente od inaccettabile. La valutazione tra "enhanced" e "standard" è lasciata esclusivamente all'utente.
+\begin{figure}
+\subfloat[][I modelli proposti. La freccia verde indica quale sia la chiave numerica per la selezione del modello da inserire nell'ultima riga della schermata riportata\label{fig:modsel}]{\includegraphics[width=0.6\linewidth]{modSel}}\qquad
+\subfloat[][Il grafico presentato; dove sono rappresentati gli andamenti di $R^2$ per ciascun modello proposto nella tabella in \ref{fig:modsel} \label{fig:regsub}]{\includegraphics[width=0.35\linewidth]{subreg}}
+\caption{Esempi estratti della procedura di selezione dei modelli regressivi}
+\label{fig:selMod}
+\end{figure}
+
+Il numero dei possibili regressori è limitato a 4 (5, contando anche l'intercetta della retta di regressione).
+
+Per ciascun numero di regressori sono presentate le due migliori formule ed i relativi indici statistici di rappresentatività. Un esempio della tabella sottoposta all'utente è riportato in figura \ref{fig:modsel}. Per facilitare la disponibilità di queste informazioni, esse vengono riportate in un grafico (figura \ref{fig:regsub}) automaticamente generato avente in ascisse il numero di regressori ed in ordinate l'indice $AdjR^2$.
+La selezione del modello avviene ad opera dell'utente sulla base delle proprie conoscenze e finalità ed è operata digitando il numero identificativo\footnote{evidenziato dalla freccia verde nella figura \ref{fig:modsel}} corrispondente al modello selezionato.
+
+
+\lstinline!foreYield! offre anche la stima effettuata mediante regressione delle componenti principali (PCR). Questa tecnica offre una maggiore tutela dalla collinearità della regressione. Essa non richiede alcun intervento da parte dell'utente ed i risultati sono presentati direttamente a completamento della procedura, come si vedrà nella sezione successiva.
+\section{Risultati}
+A seguito dell'indicazione del modello viene effettuata la validazione crociata\footnote{La metodologia adottata per la Cross Validation è omogeneamente Leave One Out (LOO), che meglio simula le condizioni in cui i sistemi predittivi si trovano ad operare e che quindi meglio ne rappresenta la validità} (Cross Validation)  sia dei risultati del modello sia della Regressione per Componenti Principali (PCR). Di quest'ultima,effettuata in completa autonomia dal programma, sono presentati direttamente i risultati.
+I risultati della Cross Validazione sono presentati in un grafico (riportato in figura \ref{fig:resul}) dove si hanno anche i valori aggiornati con i trend tecnologici (nel solo caso fossero stati rimossi).
+
+I risultati basati sulla sola componente climatica determinante i raccolti sono:
+\begin{enumerate}
+\item la previsione del modello regressivo, con relativo errore statistico
+\item il risultato della Cross Validation sui risultati di modello: errore statistico ed $R^2$
+\item la previsione ottenuta con PCR e relativo errore in Cross Validation
+\end{enumerate}
+\begin{figure}
+%\begin{wrapfloat}{figure}{r}{0pt}
+\subfloat[Schermata riassuntiva degli esiti\label{response}]{\includegraphics[width=0.6\linewidth]{resp}}\qquad
+\subfloat[][I risultati della Cross Validazione % eventualmente aggiornati con i trend tecnologici (verde e blu).\\Nero e rosso rappresentano i dati reali (originali e privati del trend) 
+del modello, generati contestualmente alla schermata di cui in \ref{response}\label{fig:resul}]{\includegraphics[width=0.35\linewidth]{result}}
+\caption{Esempi della presentazione dei risultati}
+
+%\end{wrapfloat}
+\end{figure}
+La PCR può costituire una buon termine di confronto per i risultati ottenuti con il modello regressivo. Affinità tra le due previsioni suggeriscono che il modello adottato non sia afflitto da fenomeni di over-fitting o collinearità che inficino la validità previsionale.
+
+Per l'applicabilità dei risultati dell'analisi è necessario considerare i trend tecnologici presenti ma non considerati nella regressione;
+gli effetti della componente tecnologica in OFFICIAL\_YIELD, precedentemente sottratti, vengono sommati (esplicitamente).
+
+Per offrire un termine di confronto della previsione al lordo della componente di trend tecnologico, viene presentata la previsione (aliena ad ogni simulazione agronomica) basata sulla sola serie storica dei dati di OFFICIAL\_YIELD.
+
+I risultati vengono forniti all'utente in una schermata riassuntiva degli esiti, esemplificativamente riportata in figura \ref{response}.
+
+
+\end{document}

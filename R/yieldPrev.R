@@ -289,6 +289,7 @@ cutTrend<-function(inizio,fine){
 
 library(leaps)
 library(HH)
+library(relaimpo)
 modSel <- function(){
 	tableXregression <-merge(yieldPrev$flatYield , yieldPrev$relatedModel , by="YEAR")
 	#clean this table, 0 columns are going to mess it up
@@ -335,6 +336,10 @@ modSel <- function(){
 	detach(yieldPrev)
 	yieldPrev$CVmsRes<-c(validC[1],validC[5])
 	#yieldPrev$CVmsRes<-attributes(validC)$ms
+	genizi<-as.matrix(calc.relimp(yieldPrev$modelLM,type="genizi")$genizi)
+	colnames(genizi)<-as.list("R2")
+	cat(c("SOME INFOs ABOUT THIS MODEL:  \n Decomposition of R2 accordingly to (Genizi,1993): \n"),fill=TRUE)
+	print(genizi)
 }
 library(DAAG)
 

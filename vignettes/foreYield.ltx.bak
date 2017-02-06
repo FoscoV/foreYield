@@ -27,8 +27,9 @@
 \title{foreYield}
 \date{}
 \begin{document}
-
+\maketitle
 \tableofcontents
+\pagebreak
 \section{Introduzione}
 Il pacchetto R \lstinline!foreYield! è disegnato per fornire un interfaccia utente interattiva che accompagni l'utilizzatore attraverso i vari passaggi connessi alla regressione dei risultati di simulazione per la previsione delle rese agricole.
 La regressione richiede la disponibilità delle simulazioni effettuate per gli anni passati ed i relativi dati effettivi. Viene prevista la resa dell'anno corrente in 
@@ -44,6 +45,7 @@ remotes::install_github(FoscoV/foreYield)
 \end{lstlisting}
 Le istruzioni contenute in listing \ref{instR} provvedono automaticamente all'installazione della versione più recente di \lstinline!foreYield! (od al suo aggiornamento) e delle relative dipendenze.
 Il pacchetto \lstinline!foreYield! è basato su strumenti di analisi dati forniti in altri pacchetti. La struttura del pacchetto anzichè uno script è stata adottata, oltre che per la semplificazione nella gestione delle versioni in vista di futuri aggiornamenti, per la più comoda gestione delle dipendenze.
+\pagebreak
 \section{Note d'uso}
 Sono di seguito riportati i dettagli relativi alle diverse fasi dell'iter di stima.
 Un volta effettuata l'installazione per l'avvio della procedura è sufficiente, in una sessione di \lstinline!R!, l'impiego delle istruzioni di cui in listing \ref{startFY}.
@@ -215,11 +217,11 @@ Creando un modello regressivo previsionale dei valori di OFFICIAL\_YIELD basato 
 
 \paragraph*{Esogenità dei trend rimossi}
 Viene verificato che la rimozione dei trend tecnologici effettuata non aumenti lo scarto quadratico medio delle previsioni confrontando i valori di Cross 
-Validation con le stime effettuate con lo stesso modello\footnote{Si ricordi che questa validazione viene segnalata in conclusione: il modello impiegato sarà quello selezionato nella ventura sezione \ref{ssec:modSel}} in base ai dati per i quali non è stato indicato un trend.
+Validation con le stime effettuate con lo stesso modello\footnote{La validazione è svolta in conclusione: il modello impiegato sarà quello selezionato nella sezione \ref{ssec:modSel}} in base ai dati per i quali non è stato indicato un trend.
 \section{Selezione del modello}\label{ssec:modSel}
 Una volta conclusa la normalizzazione tecnologica dei valori di OFFICIAL\_YIELD, questi vengono sottoposti ad analisi regressiva con diverse possibili formule di regressione lineare. 
 
-\lstinline!foreYield! consente la creazione di regressori ottenuti dalla combinazione di due fattori regressivi. I modelli regressivi così ottenuti conseguono, solitamente, una maggiore accuratezza. Tuttavia questa pratica (denominata "enhanced" entro il programma) non è standard ed in funzione della destinazione della previsione può essere conveniente od inaccettabile. La valutazione tra "enhanced" e "standard" è lasciata esclusivamente all'utente.
+\lstinline!foreYield! consente la creazione di regressori ottenuti dalla combinazione di due fattori regressivi. I modelli regressivi così ottenuti conseguono, solitamente, una maggiore accuratezza. Tuttavia questa pratica (denominata "enhanced" entro il programma) non è standard ed in funzione della destinazione della previsione può essere conveniente od inaccettabile.% La valutazione tra "enhanced" e "standard" è lasciata esclusivamente all'utente.
 \begin{figure}
 \subfloat[][I modelli proposti. La freccia verde indica quale sia la chiave numerica per la selezione del modello da inserire nell'ultima riga della schermata riportata\label{fig:modsel}]{\includegraphics[width=0.6\linewidth]{modSel}}\qquad
 \subfloat[][Il grafico presentato; dove sono rappresentati gli andamenti di $R^2$ per ciascun modello proposto nella tabella in \ref{fig:modsel} \label{fig:regsub}]{\includegraphics[width=0.35\linewidth]{subreg}}
@@ -228,15 +230,17 @@ Una volta conclusa la normalizzazione tecnologica dei valori di OFFICIAL\_YIELD,
 \end{figure}
 
 Il numero dei possibili regressori è limitato a 4 (5, contando anche l'intercetta della retta di regressione).
-
 Per ciascun numero di regressori sono presentate le due migliori formule ed i relativi indici statistici di rappresentatività. Un esempio della tabella sottoposta all'utente è riportato in figura \ref{fig:modsel}. Per facilitare la disponibilità di queste informazioni, esse vengono riportate in un grafico (figura \ref{fig:regsub}) automaticamente generato avente in ascisse il numero di regressori ed in ordinate l'indice $AdjR^2$.
 La selezione del modello avviene ad opera dell'utente sulla base delle proprie conoscenze e finalità ed è operata digitando il numero identificativo\footnote{evidenziato dalla freccia verde nella figura \ref{fig:modsel}} corrispondente al modello selezionato.
 
 
-\lstinline!foreYield! offre anche la stima effettuata mediante regressione delle componenti principali (PCR). Questa tecnica offre una maggiore tutela dalla collinearità della regressione. Essa non richiede alcun intervento da parte dell'utente ed i risultati sono presentati direttamente a completamento della procedura, come si vedrà nella sezione successiva.
+A seguito della selezione, viene fornita indicazione della significatività dei regressori. Per ciascun regressore è presentato il corrispondente contributo in $R^2$, secondo (Genizi,~ 1993)
 \section{Risultati}
+\lstinline!foreYield! offre la stima effettuata mediante regressione delle componenti principali (PCR). Questa tecnica offre una maggiore tutela dalla collinearità della regressione. Essa non richiede alcun intervento da parte dell'utente e ne sono presentati direttamente i risultati.
+La PCR può costituire una buon termine di confronto per i risultati ottenuti con il modello regressivo. Affinità tra le due previsioni suggeriscono che il modello adottato non sia afflitto da fenomeni di over-fitting o collinearità che inficino la validità previsionale.
+
 A seguito dell'indicazione del modello viene effettuata la validazione crociata\footnote{La metodologia adottata per la Cross Validation è omogeneamente Leave One Out (LOO), che meglio simula le condizioni in cui i sistemi predittivi si trovano ad operare e che quindi meglio ne rappresenta la validità} (Cross Validation)  sia dei risultati del modello sia della Regressione per Componenti Principali (PCR). Di quest'ultima,effettuata in completa autonomia dal programma, sono presentati direttamente i risultati.
-I risultati della Cross Validazione sono presentati in un grafico (riportato in figura \ref{fig:resul}) dove si hanno anche i valori aggiornati con i trend tecnologici (nel solo caso fossero stati rimossi).
+I risultati della Cross Validazione sono presentati in un grafico (riportato in figura \ref{fig:resul}) dove si hanno anche i valori aggiornati con i trend tecnologici (nel	 caso fossero stati rimossi).
 
 I risultati basati sulla sola componente climatica determinante i raccolti sono:
 \begin{enumerate}
@@ -253,7 +257,7 @@ del modello, generati contestualmente alla schermata di cui in \ref{response}\la
 
 %\end{wrapfloat}
 \end{figure}
-La PCR può costituire una buon termine di confronto per i risultati ottenuti con il modello regressivo. Affinità tra le due previsioni suggeriscono che il modello adottato non sia afflitto da fenomeni di over-fitting o collinearità che inficino la validità previsionale.
+
 
 Per l'applicabilità dei risultati dell'analisi è necessario considerare i trend tecnologici presenti ma non considerati nella regressione;
 gli effetti della componente tecnologica in OFFICIAL\_YIELD, precedentemente sottratti, vengono sommati (esplicitamente).

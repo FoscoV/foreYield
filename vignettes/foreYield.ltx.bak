@@ -116,7 +116,7 @@ $\dots{}$&$\dots{}$&$\dots{}$&$\dots{}$&$\dots{}$\\
 
 La struttura "long table" viene automaticamente gestita. Essa, tuttavia, è basata sul nome delle colonne \lstinline!INDICATOR_CODE! e \lstinline!INDICATOR_VALUE!, rispettivamente per il nome del regressore ed il rispettivo valore. Questi nomi sono \textsc{obbligatori} per questa tipologia di file.
 \subsubsection{Database csv in due file}\label{twoFile}
-Questa opzione importa due distinti database, uno contenente i dati statistici ufficiali(tabella \ref{tab:eurostat} ed uno i dati delle simulazioni (tabella \ref{tab:prev}).
+Questa opzione importa due distinti database, uno contenente i dati statistici ufficiali ed avente struttura analoga alla tabella \ref{tab:eurostat} ed uno riportante i dati delle simulazioni ed analogo alla tabella \ref{tab:prev}.
 \begin{table}[h]
 \centering
 \caption{Struttura del database dei dati ufficiali. Solo le prime due colonne sono obbligatorie}
@@ -172,7 +172,7 @@ Con regressioni (lineari e locali) per agevolarne l'interpretazione all'utente.}
 \label{offYield}
 \end{figure}
 L'utilizzatore viene interrogato circa la sua intenzione di sottrarre una componente tecnologica dai raccolti.
-Una risposta affermativa alla domanda avvia la procedura per l'individuazione e quantificazione della componente tecnologica. Tuttavia è lecito ritenere che il trend non sia significativo né dovuto a fattori esterni e procedere direttamente con la selezione del modello regressivo od interrompere durante le fasi della rimozione .
+Una risposta affermativa alla domanda avvia la procedura per l'individuazione e quantificazione della componente tecnologica. Tuttavia è lecito ritenere che il trend non sia significativo né dovuto a fattori esterni e procedere direttamente con la selezione del modello regressivo od interrompere durante le fasi della rimozione del trend.
  La presenza di un trend, in sé non ostacola la regressione, purchè i regressori lo possano spiegare.
 \subsection{Eliminazione di una componente tecnologica}
 Mentre le componenti climatiche sono considerate dai modelli, gli effetti tecnologici non vi sono inclusi e devono essere sottratti per garantire l'esatta regressione dei dati.

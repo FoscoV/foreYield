@@ -1,6 +1,6 @@
 # Fdb version 3
-["biber foreYield"] 1486398429 "foreYield.bcf" "foreYield.bbl" "foreYield" 1486398455
-  "foreYield.bcf" 1486398454 91788 577a85490aca3d3d382e1988f4547ffa ""
+["biber foreYield"] 1486400016 "foreYield.bcf" "foreYield.bbl" "foreYield" 1486400021
+  "foreYield.bcf" 1486400020 91838 3a81cd7374da3145b6448efd5947b2b3 ""
   "references.bib" 1486397709 2911 8e179c4278a86ab1cda9820d05f16727 ""
   (generated)
   "foreYield.blg"
@@ -79,9 +79,9 @@
   "foreYield.aux" 1486143187 6698 178d74dae7832988a2bc8408ee45f40d ""
   "foreYield.ltx" 1486316974 21990 b57ffa35af55bb035ce5c4c8b6197047 ""
   (generated)
-  "foreYield.log"
   "foreYield.dvi"
-["pdflatex"] 1486398452 "foreYield.ltx" "foreYield.pdf" "foreYield" 1486398455
+  "foreYield.log"
+["pdflatex"] 1486400018 "foreYield.ltx" "foreYield.pdf" "foreYield" 1486400021
   "/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc" 1254269338 2375 baa924870cfb487815765f9094cf3728 ""
   "/usr/local/texlive/2015/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
@@ -238,12 +238,12 @@
   "/usr/local/texlive/2015/texmf.cnf" 1460564813 455 5b996dcaa0eb4ef14a83b026bc0a008c ""
   "confSplash.jpg" 1486129620 90842 5c146a3f0da3dbc79c3e838c7e866e48 ""
   "deTrend.jpg" 1486120463 97584 a5d691650b2f31581813ac6254992edb ""
-  "foreYield.aux" 1486398454 8923 7c4742bc6d9abd4816a4bedaef8e07a5 ""
-  "foreYield.bbl" 1486398431 11689 7c6c925eef06e248ed73da78f6987256 "biber foreYield"
-  "foreYield.ltx" 1486398448 22956 5aeb5c3adbb5d5564b9a8f054b4e1324 ""
-  "foreYield.out" 1486398454 908 2aa942a87fd3cc612d362c990adad4a4 ""
-  "foreYield.run.xml" 1486398454 2341 260398184d00e2ce61cd3c21e2bd4301 ""
-  "foreYield.toc" 1486398454 1863 30b0933a79b0c46060ed2ee91b421427 ""
+  "foreYield.aux" 1486400020 8947 3a2d379fa85e7d282bf8839975bc5bdb ""
+  "foreYield.bbl" 1486400018 11689 7c6c925eef06e248ed73da78f6987256 "biber foreYield"
+  "foreYield.ltx" 1486400009 22972 3d17551f1d54bf3bf98f46a4e6472103 ""
+  "foreYield.out" 1486400020 908 2aa942a87fd3cc612d362c990adad4a4 ""
+  "foreYield.run.xml" 1486400020 2341 260398184d00e2ce61cd3c21e2bd4301 ""
+  "foreYield.toc" 1486400020 1863 30b0933a79b0c46060ed2ee91b421427 ""
   "modSel.jpg" 1486133145 94350 c7996b7fd3eeb3958279316f12aa7315 ""
   "offYield.jpg" 1486130720 98856 da7c701b23b9f527002d8e8146ad4e68 ""
   "remTrend.jpg" 1486130716 171323 411ed3f3a3fbe857314ecf3d0194c48c ""
@@ -251,10 +251,10 @@
   "result.jpg" 1486130461 131721 bc304be107c8f9744af62783d4fc0014 ""
   "subreg.jpg" 1486133784 31770 f060874fab7922aea6fd04cbacf857bd ""
   (generated)
+  "foreYield.aux"
+  "foreYield.toc"
+  "foreYield.bcf"
+  "foreYield.out"
   "foreYield.run.xml"
   "foreYield.log"
-  "foreYield.toc"
-  "foreYield.aux"
-  "foreYield.bcf"
   "foreYield.pdf"
-  "foreYield.out"

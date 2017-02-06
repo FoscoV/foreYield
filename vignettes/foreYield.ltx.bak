@@ -264,7 +264,7 @@ del modello, generati contestualmente alla schermata di cui in \ref{response}\la
 Per l'applicabilità dei risultati dell'analisi è necessario considerare i trend tecnologici presenti ma non considerati nella regressione;
 gli effetti della componente tecnologica in OFFICIAL\_YIELD, precedentemente sottratti, vengono sommati (esplicitamente).
 
-Per offrire un termine di confronto della previsione al lordo della componente di trend tecnologico, viene presentata la previsione (aliena ad ogni simulazione agronomica) basata sulla sola serie storica dei dati di OFFICIAL\_YIELD.
+Per offrire un termine di confronto della previsione al lordo della componente di trend tecnologico, viene presentata la previsione (aliena ad ogni simulazione agronomica) basata sulla sola serie storica dei dati di OFFICIAL\_YIELD \cite{forecast}.
 
 I risultati vengono forniti all'utente in una schermata riassuntiva degli esiti, esemplificativamente riportata in figura \ref{response}.
 

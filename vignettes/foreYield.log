@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.4.13)  6 FEB 2017 17:27
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.4.13)  6 FEB 2017 17:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1885,7 +1885,7 @@ Package logreq Info: Writing requests to 'foreYield.run.xml'.
 Here is how much of TeX's memory you used:
  27455 strings out of 494899
  461419 string characters out of 6179222
- 885328 words of memory out of 5000000
+ 885337 words of memory out of 5000000
  30056 multiletter control sequences out of 15000+600000
  119955 words of font info for 314 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
@@ -1897,10 +1897,10 @@ onts/type1/adobe/utopia/putb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/ty
 pe1/adobe/utopia/putr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/ado
 be/utopia/putr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/adobe/utop
 ia/putri8a.pfb>
-Output written on foreYield.pdf (11 pages, 899508 bytes).
+Output written on foreYield.pdf (11 pages, 899558 bytes).
 PDF statistics:
- 287 PDF objects out of 1000 (max. 8388607)
- 256 compressed objects within 3 object streams
+ 288 PDF objects out of 1000 (max. 8388607)
+ 257 compressed objects within 3 object streams
  76 named destinations out of 1000 (max. 500000)
  42649 words of extra memory for PDF output out of 42996 (max. 10000000)
 

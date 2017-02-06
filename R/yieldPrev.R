@@ -148,19 +148,20 @@ checkTrends<-function(){
 
 #working on official data's trend
 sewTrends<-function(inizio,fine){
+	#yieldPrev$safeTrend<- NULL
 	tempLimit<-data.frame(begin=inizio,finish=fine)
-	attach(yieldPrev)
-	flatOff<- merge(flatYield,relatedModel,by="YEAR")
-	yieldPrev$flatOff<-flatOff
+	#attach(yieldPrev)
+	yieldPrev$flatOff<- merge(yieldPrev$flatYield,yieldPrev$relatedModel,by="YEAR")
+	#yieldPrev$flatOff<-flatOff
 	normalizingTrend<-function(campo){ #campo is numeric!
-		yieldPrev$flatOff[,campo]<-(flatOff[,campo]/mean(flatOff[,campo]))*100
+		yieldPrev$flatOff[,campo]<-(yieldPrev$flatOff[,campo]/mean(yieldPrev$flatOff[,campo]))*100
 	}
-	lapply(X=seq(2,length(flatOff)),FUN=normalizingTrend)
+	lapply(X=seq(2,length(yieldPrev$flatOff)),FUN=normalizingTrend)
 
 	#removing NA values, they mess up the lm....
-	flatOff<-yieldPrev$flatOff
-	yieldPrev$flatOff<-flatOff[sapply(flatOff,function(flatOff)!any(is.na(flatOff)))]
-	flatOff<-yieldPrev$flatOff
+	#flatOff<-yieldPrev$flatOff
+	yieldPrev$flatOff<-yieldPrev$flatOff[sapply(yieldPrev$flatOff,function(flatOff)!any(is.na(flatOff)))]
+	#flatOff<-yieldPrev$flatOff
 	trendAN<-new.env()
 	trendAN$normPlot<-ggplot(yieldPrev$flatOff)+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red")+geom_smooth(method="loess",color="red",aes(x=YEAR,y=OFFICIAL_YIELD,group=1),se=FALSE)
 	trendPlot<-function(yvar){
@@ -170,18 +171,22 @@ sewTrends<-function(inizio,fine){
 	}
 	lapply(names(yieldPrev$flatOff[,c(-1)]),FUN=trendPlot)
 	trendAN$PlotNormA<-trendAN$normPlot+geom_line(aes(x=YEAR,y=OFFICIAL_YIELD,group=1),color="red",size=1.5)+geom_smooth(method="loess",color="orange",aes(x=YEAR,y=OFFICIAL_YIELD),se=FALSE,size=1.5)+labs(x="YEARS", y="TREND")+ geom_rect(data=tempLimit, aes(xmin=begin, xmax=finish, ymin=-Inf, ymax=+Inf), fill='pink', alpha=0.5)
-	detach(yieldPrev)
+	#detach(yieldPrev)
 	plot(trendAN$PlotNormA)
 
 	#yieldPrev$friendShip<-data.frame(trendCoef=lm(formula=OFFICIAL_YIELD ~ YEAR,data=flatOff)$coefficients[2])
 	#rownames(yieldPrev$friendShip[1,])<-"OFFICIAL_YIELD"
-	flatOff1<-yieldPrev$flatOff
-	flatOff2<-subset(flatOff1,flatOff1$YEAR >= inizio & flatOff1$YEAR <= fine)
-	yieldPrev$flatOff<-flatOff2
-	flatOff<-flatOff2
-	yieldPrev$friendShip<-data.frame(param=as.character(names(flatOff)[(names(flatOff) == "OFFICIAL_YIELD")]),trendCoef=as.numeric(lm(formula=OFFICIAL_YIELD ~ YEAR,data=flatOff)$coefficients[2]))
-	plot(trendAN$PlotNormA+stat_smooth(data=flatOff,method="lm",color="black",aes(x=YEAR,y=OFFICIAL_YIELD,group=1),fullrange=FALSE,se=FALSE,size=1))
-	mayTrend<-names(flatOff)[(names(flatOff)!= "YEAR" &  names(flatOff)!= "OFFICIAL_YIELD")]
+	#flatOff1<-yieldPrev$flatOff
+	yieldPrev$flatOff<-subset(yieldPrev$flatOff,yieldPrev$flatOff$YEAR >= inizio & yieldPrev$flatOff$YEAR <= fine)
+	#yieldPrev$flatOff<-flatOff2
+	#flatOff<-flatOff2
+	yieldPrev$friendShip<-data.frame(param=as.character(names(yieldPrev$flatOff)[(names(yieldPrev$flatOff) == "OFFICIAL_YIELD")]),trendCoef=as.numeric(lm(formula=OFFICIAL_YIELD ~ YEAR,data=yieldPrev$flatOff)$coefficients[2]))
+	plot(trendAN$PlotNormA+stat_smooth(data=yieldPrev$flatOff,method="lm",color="black",aes(x=YEAR,y=OFFICIAL_YIELD,group=1),fullrange=FALSE,se=FALSE,size=1))
+	flatOff1<-merge(yieldPrev$flatYield,yieldPrev$relatedModel,by="YEAR")
+	yieldPrev$flatOff<-subset(flatOff1,flatOff1$YEAR >= inizio & flatOff1$YEAR <= fine)
+	#yieldPrev$flatOff<-flatOff2
+	#flatOff<-flatOff2
+	mayTrend<-names(yieldPrev$flatOff)[(names(yieldPrev$flatOff)!= "YEAR" &  names(yieldPrev$flatOff)!= "OFFICIAL_YIELD")]
 	friendTest<-function(mate){
 		allIn<-yieldPrev$flatOff
 		formulFriend<-as.formula(paste(as.name(mate)," ~ YEAR",sep=""))
@@ -192,13 +197,13 @@ sewTrends<-function(inizio,fine){
 	}
 	sapply(X=mayTrend,FUN=friendTest,USE.NAMES=TRUE)
 	trendShip<-yieldPrev$friendShip
-	YieldTrend<-trendShip[1,2]
-	yieldPrev$yieldTrend<-YieldTrend
-	cat(c("The found trend for Official_Yield is ",round((trendShip[1,2]),2),"%. \n The following are the similar trends available between the predictors: \n ->Absolute values \n -> Sorted by difference with Yield trend \n \n "),fill=TRUE)
+	yieldPrev$YieldTrend<-trendShip[1,2]
+	#yieldPrev$yieldTrend<-YieldTrend
+	cat(c("The found trend for Official_Yield is ",round((trendShip[1,2]),2),". \n The following are the similar trends available between the predictors: \n ->Absolute values \n -> Sorted by difference with Yield trend \n \n "),fill=TRUE)
 	trendShip$trendDiff<-abs(trendShip[,2]-trendShip[1,2])
 	trendMates<-trendShip[c(-1),]
 	trendMates<-(trendMates[order(trendMates$trendDiff),])
-	trendMates$diff_perC <- round(trendMates$trendDiff/YieldTrend,2)
+	trendMates$diff_perC <- round(abs(trendMates$trendDiff)/abs(yieldPrev$YieldTrend),2)
 	trendMates$ID <- seq(1,length(trendMates[,1]))
 	print(trendMates)
 
@@ -213,7 +218,7 @@ sewTrends<-function(inizio,fine){
 		cat(c("\n Does any of the predictors explain some of the Official's Trend? \n If yes, point which one(s) by ID (multiple answers allowed) \n If none of them does, return blank: \n"),fill=TRUE)
 		mateList<-scan(,nmax=length(trendMates[,1]))
 		if(length(mateList >= 1)){
-			yieldPrev$safeTrend <- mean(trendMates$trendCoef[c(mateList)])
+			yieldPrev$safeTrend <- mean(abs(trendMates$trendCoef[c(mateList)]))
 		}
 		cutTrend(inizio,fine)
 	}
@@ -249,7 +254,7 @@ cutTrend<-function(inizio,fine){
 	if(any(names(yieldPrev) == "due2trend")){} else {
 		yieldPrev$due2trend<-data.frame(YEAR=yieldPrev$actualYield$YEAR,trended=rep(0,length=length(yieldPrev$actualYield$YEAR)))
 	}
-	notSoFlat <-yieldPrev$actualYield
+	notSoFlat <-yieldPrev$flatYield
 	#cutting trend from inizio to fine
 	preflat<-subset(notSoFlat,notSoFlat$YEAR >= inizio & notSoFlat$YEAR <= fine)
 	flatLin<-lm(OFFICIAL_YIELD~YEAR,data=preflat)
@@ -257,7 +262,8 @@ cutTrend<-function(inizio,fine){
 	cutEnv<-new.env()
     cutEnv$modello<-flatLin
     cutEnv$flatting<-preflat
-    if(any(names(yieldPrev)=="safeTrend)")){cutEnv$trendCorr<-(flatLin$coefficients[2]-yieldPrev$safeTrend)} else{ cutEnv$trendCorr<-flatLin$coefficients[2]}
+    if(any(names(yieldPrev)=="safeTrend")){cutEnv$trendCorr<-(flatLin$coefficients[2]-yieldPrev$safeTrend)} else{ cutEnv$trendCorr<-flatLin$coefficients[2]}
+    print(cutEnv$trendCorr)
     smootherer<-function(num){
 		#attach(cutEnv)
 		model<-cutEnv$modello
@@ -281,7 +287,7 @@ cutTrend<-function(inizio,fine){
 		lapply(X=seq((fine+1),max(notSoFlat$YEAR)),FUN=trendInt)
 		}
 	#now we have to grant no more safeTrend will influence further trends!
-	yieldPrev$safeTrend<- NULL
+
 
 	yieldPrev$flatYield$OFFICIAL_YIELD<-yieldPrev$actualYield$OFFICIAL_YIELD - yieldPrev$due2trend$trended
 }

@@ -303,7 +303,7 @@ modSel <- function(){
 		if(min(tableXregression[,cola]) == max(tableXregression[,cola])){return(cola)}
 	}
 	dirtyCol<-lapply(X=seq(1,length(names(tableXregression))),FUN=coluClean)
-	tableXregression[,unlist(dirtyCol)]<-NULL
+	tableXregression<-tableXregression[,-unlist(dirtyCol)]
 	cat("Are you looking for a standard additive model? \n a models accounting for combined predictors. \n Which do you prefer? \n ")
 	cat(" 1. standard \n 2. enhanced \n ")
 	standardModel<-scan(,what="text",nmax=1)

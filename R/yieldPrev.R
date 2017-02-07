@@ -82,7 +82,7 @@ relatedModel<-unique(prev)
 		actualYield<-subset(actualYield,actualYield$NUTS_CODE == countryO)
 	}
 	if(any(names(prev)=="NUTS_CODE")){
-		cat(c("The following countries are provided in the DataBases: \n SIMULATION:",levels(prev$NUTS_CODE)))
+		cat(c("The following countries are provided in the DataBases: \n SIMULATION:",levels(prev$NUTS_CODE)," \n "))
 		countryS<-scan(,what="text",nmax=1)
 		while(any(levels(prev$NUTS_CODE) == countryS) == FALSE){cat("point an existing one \n ")
 		countryS<-scan(,what="text",nmax=1)}
@@ -307,7 +307,7 @@ modSel <- function(){
 	cat("Are you looking for a standard additive model? \n a models accounting for combined predictors. \n Which do you prefer? \n ")
 	cat(" 1. standard \n 2. enhanced \n ")
 	standardModel<-scan(,what="text",nmax=1)
-	while(standardModel != "1" & standardModel != "2" & standardModel != "standard" & standardModel != "enhanced" ){
+	while(standardModel != "1" & standardModel != "2" & standardModel != "standard" & standardModel != "enhanced" & length(standardModel)==0 ){
 		cat(" 1. standard \n 2. enhanced \n ")
 		standardModel<-scan(,what="text",nmax=1)}
 	if(standardModel == "1" | standardModel == "standard"){
@@ -342,10 +342,12 @@ modSel <- function(){
 	detach(yieldPrev)
 	yieldPrev$CVmsRes<-c(validC[1],validC[5])
 	#yieldPrev$CVmsRes<-attributes(validC)$ms
+	if(standardModel == 1){
 	genizi<-as.matrix(calc.relimp(yieldPrev$modelLM,type="genizi")$genizi)
 	colnames(genizi)<-as.list("R2")
 	cat(c("SOME INFOs ABOUT THIS MODEL:  \n Decomposition of R2 accordingly to (Genizi,1993): \n"),fill=TRUE)
-	print(genizi)
+	print(genizi)}
+
 }
 library(DAAG)
 

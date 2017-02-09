@@ -391,7 +391,7 @@ cat(c("	\n
 	plot(respoPlot)
 	#dev.new()
 	#plot(yieldPrev$PCmodel,line=1)
-	if(any(names(yieldPrev)=="breakPoint")){valiTrend()}
+	if(any(names(yieldPrev)=="breakPoint")){try(valiTrend(),silent=TRUE)}
 }
 
 saveYieldSession<- function(){

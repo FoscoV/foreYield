@@ -33,7 +33,7 @@
 \tableofcontents
 \pagebreak
 \section{Introduzione}
-Il pacchetto R \lstinline!foreYield! è disegnato per fornire un interfaccia utente interattiva che accompagni l'utilizzatore attraverso i vari passaggi connessi alla regressione dei risultati di simulazione per la previsione delle rese agricole.
+Il pacchetto R \lstinline!foreYield! è disegnato per fornire un interfaccia utente interattiva che accompagni l'utilizzatore attraverso i vari passaggi connessi alla regressione dei risultati di simulazione per la previsione delle rese agricole\cite{vossen}.
 La regressione richiede la disponibilità delle simulazioni effettuate per gli anni passati ed i relativi dati effettivi. Viene prevista la resa dell'anno corrente in 
 considerazione delle simulazioni aggiornate dei regressori. Le funzioni di analisi statistica dei dati sono già disponibili in R, ma non lo è l'interfaccia e la lineare gestione dei passaggi successivi: l'impiego di \lstinline!foreYield! agevola l'iter emancipando l'utente dagli aspetti di programmazione richiesti.
 
@@ -206,7 +206,7 @@ Si osservi che la selezione di un singolo regressore porta, in seguito alla rimo
 Qualora gli andamenti della serie storica lo  esigano, è possibile sottrarre più di una componente tecnologica da diversi intervalli temporali.
 
 Si noti che la sottrazione di un trend tecnologico esauritosi prima della fine della serie storica sottende implicitamente che la componente tecnologica sia rimasta costantemente presente in seguito ed è pertanto automaticamente sottratta.
-I trend sottratti sono considerati aventi andamento lineare, in ragione della dinamica di realizzazione del trend che risulta legata alla diffusione di pratiche agricole e che pertanto si caratterizza più ragionevolmente per un andamento geometrico.
+I trend sottratti sono considerati aventi andamento lineare, in ragione della dinamica di realizzazione del trend che risulta legata alla diffusione di pratiche agricole e che pertanto si caratterizza più ragionevolmente per un andamento geometrico\cite{swanso79}.
 
 A seguito della rimozione del trend viene ripresentato il grafico di cui in figura \ref{offYield} i cui dati sono però modificati, come	 osservabile dal confronto tra le figure \ref{offYield} e \ref{deTrend}.
 

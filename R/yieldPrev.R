@@ -303,17 +303,18 @@ modSel <- function(){
 		if(min(tableXregression[,cola]) == max(tableXregression[,cola])){return(cola)}
 	}
 	dirtyCol<-lapply(X=seq(1,length(names(tableXregression))),FUN=coluClean)
-	tableXregression<-tableXregression[,-unlist(dirtyCol)]
+	if(!is.null(unlist(dirtyCol))){tableXregression<-tableXregression[,-unlist(dirtyCol)]}
 	cat("Are you looking for a standard additive model? \n a models accounting for combined predictors. \n Which do you prefer? \n ")
 	cat(" 1. standard \n 2. enhanced \n ")
 	standardModel<-scan(,what="text",nmax=1)
 	while(standardModel != "1" & standardModel != "2" & standardModel != "standard" & standardModel != "enhanced" & length(standardModel)==0 ){
 		cat(" 1. standard \n 2. enhanced \n ")
-		standardModel<-scan(,what="text",nmax=1)}
+		standardModel<-scan(,what="text",nmax=1)
+	}
 	if(standardModel == "1" | standardModel == "standard"){
-	allSign <- regsubsets(OFFICIAL_YIELD~.,data=tableXregression[,c(-which(names(tableXregression)=="YEAR"))],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
+		allSign <- regsubsets(OFFICIAL_YIELD~.,data=tableXregression[,c(-which(names(tableXregression)=="YEAR"))],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
 	if(standardModel == "2" | standardModel == "enhanced"){
-	allSign <- regsubsets(OFFICIAL_YIELD~.^2+.,data=tableXregression[,c(-1)],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
+		allSign <- regsubsets(OFFICIAL_YIELD~.^2+.,data=tableXregression[,c(-1)],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
 	#renaming predictors with numbers
 	summaSign<-summaryHH(allSign,names=seq(1,length(allSign$xnames)),statistics="adjr2")
 	plot(summaSign,col="green",cex=0.8)
@@ -343,10 +344,10 @@ modSel <- function(){
 	yieldPrev$CVmsRes<-c(validC[1],validC[5])
 	#yieldPrev$CVmsRes<-attributes(validC)$ms
 	if(standardModel == 1){
-	genizi<-as.matrix(calc.relimp(yieldPrev$modelLM,type="genizi")$genizi)
-	colnames(genizi)<-as.list("R2")
-	cat(c("SOME INFOs ABOUT THIS MODEL:  \n Decomposition of R2 accordingly to (Genizi,1993): \n"),fill=TRUE)
-	print(genizi)}
+		genizi<-as.matrix(calc.relimp(yieldPrev$modelLM,type="genizi")$genizi)
+		colnames(genizi)<-as.list("R2")
+		cat(c("SOME INFOs ABOUT THIS MODEL:  \n Decomposition of R2 accordingly to (Genizi,1993): \n"),fill=TRUE)
+		print(genizi)}
 
 }
 library(DAAG)

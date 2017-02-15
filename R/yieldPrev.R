@@ -148,7 +148,6 @@ checkTrends<-function(){
 
 #working on official data's trend
 sewTrends<-function(inizio,fine){
-	#yieldPrev$safeTrend<- NULL
 	tempLimit<-data.frame(begin=inizio,finish=fine)
 	#attach(yieldPrev)
 	yieldPrev$flatOff<- merge(yieldPrev$flatYield,yieldPrev$relatedModel,by="YEAR")
@@ -189,7 +188,8 @@ sewTrends<-function(inizio,fine){
 	mayTrend<-names(yieldPrev$flatOff)[(names(yieldPrev$flatOff)!= "YEAR" &  names(yieldPrev$flatOff)!= "OFFICIAL_YIELD")]
 	friendTest<-function(mate){
 		allIn<-yieldPrev$flatOff
-		formulFriend<-as.formula(paste(as.name(mate)," ~ YEAR",sep=""))
+		#formulFriend<-as.formula(paste(as.name(mate)," ~ YEAR",sep=""))
+		formulFriend<-as.formula(paste(as.name(mate)," ~ seq(1,length(yieldPrev$flatOff[,1]))",sep=""))
 		linMod<-lm(formula=formulFriend,data=allIn)
 		yieldPrev$friendShip <- rbind(yieldPrev$friendShip,data.frame(param=paste(c(as.character(mate)),sep=""),trendCoef=as.numeric(linMod$coefficients[2])),deparse.level=1)
 		#rownames(yieldPrev$friendShip[length(yieldPrev$friendShip[,1]),])<-as.name(mate)
@@ -287,7 +287,8 @@ cutTrend<-function(inizio,fine){
 		lapply(X=seq((fine+1),max(notSoFlat$YEAR)),FUN=trendInt)
 		}
 	#now we have to grant no more safeTrend will influence further trends!
-
+	#yieldPrev$safeTrend<- NULL
+	rm(list=c("safeTrend"),envir=yieldPrev)
 
 	yieldPrev$flatYield$OFFICIAL_YIELD<-yieldPrev$actualYield$OFFICIAL_YIELD - yieldPrev$due2trend$trended
 }
@@ -460,6 +461,6 @@ virgilio<-function(){
 		suppressWarnings(checkTrends())
 	}
 	suppressWarnings(modSel())
-	suppressWarnings(responseYield())
+	suppressWarnings(try(responseYield(),silent=T))
 }
 

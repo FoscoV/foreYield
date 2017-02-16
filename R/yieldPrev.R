@@ -451,6 +451,3 @@ valiTrend<-function(){
 			virgilio()}
 	}
 }
-
-source("autoDetrender.R")
-source("batchYield.R")

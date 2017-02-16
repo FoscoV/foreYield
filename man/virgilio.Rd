@@ -1,18 +1,18 @@
 \name{virgilio}
 \alias{virgilio}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
+\title{guide you all along
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+It just provides a supervised path across the story. If you want to use other function step by step and not this one, the results are the same.
 }
 \usage{
 virgilio()
 }
 %- maybe also 'usage' for other objects documented here.
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+Actually it doesn't do anything, but sort the other function (it doesn't save nor load) from earlier to later stages of the proceedings.
+It's something similar tto a scout or a tutor managing that everything works fine (NB: that's the aim).
 }
 \value{
 %%  ~Describe the value returned
@@ -28,13 +28,13 @@ virgilio()
 %%  ~~who you are~~
 }
 \note{
-%%  ~~further notes~~
+No argument are supposed when calling the function
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+configure()
 }
 \examples{
 ##---- Should be DIRECTLY executable !! ----
@@ -42,24 +42,22 @@ virgilio()
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function () 
+function ()
 {
-    if (any(names(yieldPrev) == "actualYield")) {
+    if (any(ls() == "yieldPrev")) {
     }
     else {
-        suppressWarnings(configure())
+        yieldPrev <- new.env()
+        yieldPrev$.conflicts.OK <- c()
     }
-    suppressWarnings(checkTrends())
-    if (adf.test(yieldPrev$flatYield$OFFICIAL_YIELD)$p.value > 
-        0.25) {
-        suppressWarnings(try(autoProposal(), silent = T))
-    }
+    configure()
+    checkTrends()
     while (yieldPrev$flattyn == "y") {
-        suppressWarnings(breakTrends())
-        suppressWarnings(checkTrends())
+        breakTrends()
+        checkTrends()
     }
-    suppressWarnings(modSel())
-    suppressWarnings(responseYield())
+    modSel()
+    responseYield()
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

@@ -113,8 +113,8 @@ relatedModel<-unique(prev)
 			#suggest: loop checking that the desired decade is lower than the last one...
 			currentDecade<-scan(,nmax=1)
 			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
-		}
-	}else{yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]}
++		}
+	}
 }
 		#save information for saveYieldSession()
 
@@ -297,7 +297,7 @@ cutTrend<-function(inizio,fine){
 library(leaps)
 library(HH)
 library(relaimpo)
-modSel <- function(){
+modSel <- function(standardModel,rcrit){
 	tableXregression <-merge(yieldPrev$flatYield , yieldPrev$relatedModel , by="YEAR")
 	#clean this table, 0 columns are going to mess it up
 	coluClean<-function(cola){
@@ -305,12 +305,14 @@ modSel <- function(){
 	}
 	dirtyCol<-lapply(X=seq(1,length(names(tableXregression))),FUN=coluClean)
 	if(!is.null(unlist(dirtyCol))){tableXregression<-tableXregression[,-unlist(dirtyCol)]}
-	cat("Are you looking for a standard additive model? \n a models accounting for combined predictors. \n Which do you prefer? \n ")
-	cat(" 1. standard \n 2. enhanced \n ")
-	standardModel<-scan(,what="text",nmax=1)
-	while(standardModel != "1" & standardModel != "2" & standardModel != "standard" & standardModel != "enhanced" & length(standardModel)==0 ){
-		cat(" 1. standard \n 2. enhanced \n ")
-		standardModel<-scan(,what="text",nmax=1)
+	if(missing(standardModel)){
+		cat("Are you looking for a standard additive model? \n a models accounting for combined predictors. \n Which do you prefer? \n ")
+ 		cat(" 1. standard \n 2. enhanced \n ")
+ 		standardModel<-scan(,what="text",nmax=1)
+		while(standardModel != "1" & standardModel != "2" & standardModel != "standard" & standardModel != "enhanced" & length(standardModel)==0 ){
+			cat(" 1. standard \n 2. enhanced \n ")
+			standardModel<-scan(,what="text",nmax=1)
+		}
 	}
 	if(standardModel == "1" | standardModel == "standard"){
 		allSign <- regsubsets(OFFICIAL_YIELD~.,data=tableXregression[,c(-which(names(tableXregression)=="YEAR"))],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
@@ -324,7 +326,8 @@ modSel <- function(){
 	print(summaSign)
 	#print(summaryHH(allSign,abbrev=3,statistics="adjr2"))
 	cat("\n Note: one of the accounted parameter is (Intercept) \n Select a model")
-	modId<-scan(,nmax=1)
+	if(missing(rcrit)){
+	modId<-scan(,nmax=1)}else{modId<-which(summaSign$rsq == max(summaSign$rsq))[1]}
 	yieldPrev$model_formula<-c("OFFICIAL_YIELD ~ ")
 	compleFormula<-function(parametro){
 		yieldPrev$model_formula<- paste(yieldPrev$model_formula, names(coef(allSign,id= modId))[parametro],if(parametro == length(names(coef(allSign,id= modId)))) sep=" " else sep= " +")

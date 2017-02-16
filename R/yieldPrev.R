@@ -452,15 +452,3 @@ valiTrend<-function(){
 	}
 }
 
-virgilio<-function(){
-	if(any(names(yieldPrev)== "actualYield")){}else{
-	suppressWarnings(configure())}
-	suppressWarnings(checkTrends())
-	while(yieldPrev$flattyn == "y"){
-		suppressWarnings(breakTrends())
-		suppressWarnings(checkTrends())
-	}
-	suppressWarnings(modSel())
-	suppressWarnings(try(responseYield(),silent=T))
-}
-

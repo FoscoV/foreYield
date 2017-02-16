@@ -113,7 +113,7 @@ relatedModel<-unique(prev)
 			#suggest: loop checking that the desired decade is lower than the last one...
 			currentDecade<-scan(,nmax=1)
 			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
-+		}
+		}
 	}
 }
 		#save information for saveYieldSession()

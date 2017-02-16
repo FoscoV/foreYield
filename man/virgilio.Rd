@@ -1,18 +1,18 @@
 \name{virgilio}
 \alias{virgilio}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{guide you all along
+\title{
+%%  ~~function to do ... ~~
 }
 \description{
-It just provides a supervised path across the story. If you want to use other function step by step and not this one, the results are the same.
+%%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
 virgilio()
 }
 %- maybe also 'usage' for other objects documented here.
 \details{
-Actually it doesn't do anything, but sort the other function (it doesn't save nor load) from earlier to later stages of the proceedings.
-It's something similar tto a scout or a tutor managing that everything works fine (NB: that's the aim).
+%%  ~~ If necessary, more details than the description above ~~
 }
 \value{
 %%  ~Describe the value returned
@@ -28,13 +28,13 @@ It's something similar tto a scout or a tutor managing that everything works fin
 %%  ~~who you are~~
 }
 \note{
-No argument are supposed when calling the function
+%%  ~~further notes~~
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-configure()
+%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 ##---- Should be DIRECTLY executable !! ----
@@ -42,22 +42,24 @@ configure()
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function ()
+function () 
 {
-    if (any(ls() == "yieldPrev")) {
+    if (any(names(yieldPrev) == "actualYield")) {
     }
     else {
-        yieldPrev <- new.env()
-        yieldPrev$.conflicts.OK <- c()
+        suppressWarnings(configure())
     }
-    configure()
-    checkTrends()
+    suppressWarnings(checkTrends())
+    if (adf.test(yieldPrev$flatYield$OFFICIAL_YIELD)$p.value > 
+        0.25) {
+        suppressWarnings(try(autoProposal(), silent = T))
+    }
     while (yieldPrev$flattyn == "y") {
-        breakTrends()
-        checkTrends()
+        suppressWarnings(breakTrends())
+        suppressWarnings(checkTrends())
     }
-    modSel()
-    responseYield()
+    suppressWarnings(modSel())
+    suppressWarnings(responseYield())
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

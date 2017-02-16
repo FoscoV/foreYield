@@ -452,3 +452,5 @@ valiTrend<-function(){
 	}
 }
 
+source("autoDetrender.R")
+source("batchYield.R")

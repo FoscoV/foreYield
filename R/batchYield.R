@@ -46,16 +46,20 @@ importYield<-function(offiData,simuData,allData,crp,cnt,dec){
 		currentDecade<- max(subset(relatedModel,relatedModel$YEAR==currentYear)$DECADE)
 	}else{currentDecade<-dec}
 	yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
+
+	actualYield<-actualYield[,c(which(names(actualYield)=="YEAR"),which(names(actualYield)=="OFFICIAL_YIELD"))]
+	yieldPrev$actualYield<-actualYield[order(actualYield$YEAR),]
 }
 
 #
 #impreadSet<-list(offiData,simuData,allData,crp,cnt,dec)
-impreadSet<-list(allData="../sugar/sugar.csv",dec=15)
+#impreadSet<-list(allData="../sugar/sugar.csv",dec=15)
 
 
 batchFore<-function(impreadSet,modKind){
 do.call(importYield,impreadSet)
 yieldPrev$flatYield<-yieldPrev$actualYield
+suppressMessages(suppressWarnings(try(autoDetrender())))
 #modSel automated choice, it have to get edited for:
 #	autoselection of proper model based on R2
 #	receive argument for standard enhanced

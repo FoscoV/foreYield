@@ -4,7 +4,7 @@ virgilio<-function(){
 	if(any(names(yieldPrev)== "actualYield")){}else{
 	suppressWarnings(configure())}
 	suppressWarnings(checkTrends())
-	if(adf.test(yieldPrev$flatYield$OFFICIAL_YIELD)$p.value > 0.25) {suppressWarnings(try(autoProposal(),silent=T))}
+	if(suppressWarnings(adf.test(yieldPrev$flatYield$OFFICIAL_YIELD)$p.value) > 0.25) {suppressWarnings(try(autoProposal(),silent=T))}
 	while(yieldPrev$flattyn == "y"){
 		suppressWarnings(breakTrends())
 		suppressWarnings(checkTrends())
@@ -57,11 +57,11 @@ autoDetrender<-function(){
 	#check existance of break point
 	if(pettitt.test(tableXregression$OFFICIAL_YIELD)$p.value <= 0.5 & pettitt.test(tableXregression$OFFICIAL_YIELD)$estimate > 1 ){
 		untrendingIt(tableXregression$YEAR[pettitt.test(tableXregression$OFFICIAL_YIELD)$estimate],tableXregression)
+
+		while(yieldPrev$refeedAutoTrend < yieldPrev$currentYear){
+
+			try(untrendingIt(yieldPrev$refeedAutoTrend,merge(yieldPrev$flatYield , yieldPrev$relatedModel , by="YEAR")))}
 	}
-	while(yieldPrev$refeedAutoTrend < yieldPrev$currentYear){
-
-		try(untrendingIt(yieldPrev$refeedAutoTrend,tableXregression))}
-
 }
 
 untrendingIt<-function(inizio,tableXregression){

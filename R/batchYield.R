@@ -44,7 +44,7 @@ importYield<-function(offiData,simuData,allData,crp,cnt,dec){
 	yieldPrev$currentYear<- max(unique(relatedModel$YEAR))
 	if(missing(dec)){
 		currentDecade<- max(subset(relatedModel,relatedModel$YEAR==currentYear)$DECADE)
-	}else{currentDecade<-dec}
+		}else{currentDecade<-dec}
 	yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
 
 	actualYield<-actualYield[,c(which(names(actualYield)=="YEAR"),which(names(actualYield)=="OFFICIAL_YIELD"))]
@@ -63,11 +63,26 @@ suppressMessages(suppressWarnings(try(autoDetrender())))
 #modSel automated choice, it have to get edited for:
 #	autoselection of proper model based on R2
 #	receive argument for standard enhanced
-dummy<-capture.output(modSel(modKind,1))
+dummy<-capture.output(suppressMessages(suppressWarnings(modSel(modKind,1))))
 
-#response on table
+#response on Df: formula, PCA, fit, CV
+	#PCA
+	pcr_model<-pcr(OFFICIAL_YIELD ~ . ,data=yieldPrev$tableXregression,scale=TRUE,validation="LOO",ncomp=4)
+	pcr4<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=4)
 
-return(yieldPrev$expYield)
+
+	#expected
+	if(any(names(yieldPrev) =="breakPoint")){
+		knoTime<-yieldPrev$breakPoint
+		if(max(knoTime$finish)== (yieldPrev$currentYear -1)){
+		trendMissing<-mean(knoTime$trend[which(knoTime$finish == max(knoTime$finish))])+yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )]} else {trendMissing <- yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )] }
+	}else{trendMissing<-0}
+	forED<-yieldPrev$expYield$fit[1]+trendMissing
+	#CV
+	cver<-yieldPrev$CVmsRes[1]
+	results<-data.frame(expected=forED,pca4=pcr4[1],formula=yieldPrev$model_formula,R2=yieldPrev$CVmsRes[2],CV=cver)
+	rownames(results)<-NULL
+return(results)
 }
 
 #NB

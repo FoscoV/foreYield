@@ -88,20 +88,3 @@ untrendingIt<-function(inizio,tableXregression){
 	yieldPrev$refeedAutoTrend<-fine
 
 }
-
-
-
-#					tableXregression <-merge(yieldPrev$flatYield , yieldPrev$relatedModel , by="YEAR")
-#					#clean this table, 0 columns are going to mess it up
-#					coluClean<-function(cola){
-#						if(min(tableXregression[,cola]) == max(tableXregression[,cola])){return(cola)}
-#					}
-#					dirtyCol<-lapply(X=seq(1,length(names(tableXregression))),FUN=coluClean)
-#					if(!is.null(unlist(dirtyCol))){tableXregression<-tableXregression[,-unlist(dirtyCol)]}
-#					#check existance of break point
-#					if(pettitt.test(tableXregression$OFFICIAL_YIELD)$p.value <= 0.5){
-
-#						offiPlot<-ggplot(flatYield,aes(x=YEAR, y=OFFICIAL_YIELD,group=1))+geom_point(color="black")+geom_line(color="black")+geom_smooth(method="lm",color="brown",se=FALSE)+geom_smooth(method="loess",color="red",se=FALSE)+geom_smooth(method="lm",formula= y~splines::bs(x,3),color="orange",se=FALSE)
-#						plot(offiPlot)
-#						autoDetrender()
-#					}

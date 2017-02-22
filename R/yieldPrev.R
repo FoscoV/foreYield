@@ -320,14 +320,14 @@ modSel <- function(standardModel,rcrit){
 		allSign <- regsubsets(OFFICIAL_YIELD~.^2+.,data=tableXregression[,c(-1)],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
 	#renaming predictors with numbers
 	summaSign<-summaryHH(allSign,names=seq(1,length(allSign$xnames)),statistics="adjr2")
-	plot(summaSign,col="green",cex=0.8)
+	if(missing(rcrit)){plot(summaSign,col="green",cex=0.8)}
 	#plot(summaryHH(allSign,scale="r2"))
 #calc.relimp(yieldPrev$regrSW,type="car")
 	print(summaSign)
 	#print(summaryHH(allSign,abbrev=3,statistics="adjr2"))
 	cat("\n Note: one of the accounted parameter is (Intercept) \n Select a model")
 	if(missing(rcrit)){
-	modId<-scan(,nmax=1)}else{modId<-which(summaSign$rsq == max(summaSign$rsq))[1]}
+	modId<-scan(,nmax=1)}else{modId<-which(summaSign$bic == min(summaSign$bic))[1]}
 	yieldPrev$model_formula<-c("OFFICIAL_YIELD ~ ")
 	compleFormula<-function(parametro){
 		yieldPrev$model_formula<- paste(yieldPrev$model_formula, names(coef(allSign,id= modId))[parametro],if(parametro == length(names(coef(allSign,id= modId)))) sep=" " else sep= " +")
@@ -361,7 +361,7 @@ responseYield<-function(){
 	expYield <- yieldPrev$expYield
 	knoTime<-yieldPrev$breakPoint
 	if(max(knoTime$finish)== (yieldPrev$currentYear -1)){
-	trendMissing<-mean(knoTime$trend[which(knoTime$finish == max(knoTime$finish))])+yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )]} else {trendMissing <- yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )] }
+		trendMissing<-mean(knoTime$trend[which(knoTime$finish == max(knoTime$finish))])+yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )]} else {trendMissing <- yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )] }
 	cat(c(" \n \n \n RESPONSE \n \n ","As it is, the forecasted yield for year",yieldPrev$currentYear,"is",round(expYield$fit[1],2),"+/-",round(expYield$fit[1]-expYield$fit[2],2),"."),fill=TRUE)
 	cat(c("Confidence = 95% \n	\n CROSS-VALIDATION \n ",round(yieldPrev$CVmsRes[1],2),"as mean square error and ",round(yieldPrev$CVmsRes[2],2),"as R2."))
 	pcr_model<-pcr(OFFICIAL_YIELD ~ . ,data=yieldPrev$tableXregression,scale=TRUE,validation="LOO",ncomp=4)

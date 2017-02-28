@@ -40,6 +40,9 @@ autoProposal<-function(){
 			rm(list=c("flattyn","safeTrend","yieldTrend","flatOff","tableXregression","model_formula","CVmsRes","expYield","omniYield","modelLM","PCmodel"),envir=yieldPrev)
 			yieldPrev$flatYield<-yieldPrev$actualYield
 		}
+		if(appAuto == "y"){
+			suppressWarnings(checkTrends())
+		}
 		dev.off()
 
 	}

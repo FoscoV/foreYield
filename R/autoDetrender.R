@@ -4,7 +4,7 @@ virgilio<-function(){
 	if(any(names(yieldPrev)== "actualYield")){}else{
 	suppressWarnings(configure())}
 	suppressWarnings(checkTrends())
-	if(suppressWarnings(adf.test(yieldPrev$flatYield$OFFICIAL_YIELD)$p.value) > 0.25) {suppressWarnings(try(autoProposal(),silent=T))}
+	if(suppressWarnings(adf.test(yieldPrev$flatYield$OFFICIAL_YIELD)$p.value) > 0.25&yieldPrev$flattyn == "y") {suppressWarnings(try(autoProposal(),silent=T))}
 	while(yieldPrev$flattyn == "y"){
 		suppressWarnings(breakTrends())
 		suppressWarnings(checkTrends())
@@ -37,7 +37,7 @@ autoProposal<-function(){
 			appAuto<-scan(,what="text",nmax=1)
 		}
 		if(appAuto == "n"){
-			rm(list=c("breakPoint","flatYield","due2trend","friendShip","flattyn","safeTrend","yieldTrend","flatOff","tableXregression","model_formula","CVmsRes","expYield","omniYield","modelLM","PCmodel"),envir=yieldPrev)
+			rm(list=c("flattyn","safeTrend","yieldTrend","flatOff","tableXregression","model_formula","CVmsRes","expYield","omniYield","modelLM","PCmodel"),envir=yieldPrev)
 			yieldPrev$flatYield<-yieldPrev$actualYield
 		}
 		dev.off()

@@ -71,10 +71,10 @@ untrendingIt<-function(inizio,tableXregression){
 	#find out pre-trend data
 	tableXpast<-subset(tableXregression,tableXregression$YEAR<=inizio)
 	#check pre-trend dynamics
-			#resarima<-auto.arima(tableXpast$OFFICIAL_YIELD,xreg=tableXpast[,-c(which(names(tableXpast) == "YEAR"),which(names(tableXpast) == "OFFICIAL_YIELD"))],seasonal=FALSE,allowdrift=F,allowmean=T)
-			model_full <- lm(OFFICIAL_YIELD ~ ., data = tableXpast[,-c(which(names(tableXpast) == "YEAR"))])
-			scopeformula <- formula(model_full)
-			resarima <- step(object=model_full, scope=scopeformula, direction="both", trace = 0) #<== larger K reduce the suit to involve more predictors
+			resarima<-auto.arima(tableXpast$OFFICIAL_YIELD,xreg=tableXpast[,-c(which(names(tableXpast) == "YEAR"),which(names(tableXpast) == "OFFICIAL_YIELD"))],seasonal=FALSE,allowdrift=F,allowmean=T)
+			#model_full <- lm(OFFICIAL_YIELD ~ ., data = tableXpast[,-c(which(names(tableXpast) == "YEAR"))])
+			#scopeformula <- formula(model_full)
+			#resarima <- step(object=model_full, scope=scopeformula, direction="both", trace = 0) #<== larger K reduce the suit to involve more predictors
 		#trended data
 	tableXfuture<-subset(tableXregression,tableXregression$YEAR>inizio)
 	#check if trend ended
@@ -83,10 +83,11 @@ untrendingIt<-function(inizio,tableXregression){
 		print(fine)
 		tableXfuture<-subset(tableXfuture,tableXfuture$YEAR <= fine)
 		}else{fine<-yieldPrev$currentYear}
-			#futarima<-predict(resarima,newxreg=tableXfuture[,-c(which(names(tableXfuture) == "YEAR"),which(names(tableXfuture) == "OFFICIAL_YIELD"))])
-			futarima<-predict(resarima,newdata=tableXfuture[,-c(which(names(tableXfuture) == "YEAR"),which(names(tableXfuture) == "OFFICIAL_YIELD"))],se.fit=TRUE,type="response",level=0.95,interval="prediction")
-			#yieldPrev$safeTrend<-lm(futarima$pred~seq(1,length(futarima$pred)))$coefficients[2]
-			yieldPrev$safeTrend<-lm(futarima$fit[,1]~seq(1,length(futarima$fit[,1])))$coefficients[2]
+			futarima<-predict(resarima,newxreg=tableXfuture[,-c(which(names(tableXfuture) == "YEAR"),which(names(tableXfuture) == "OFFICIAL_YIELD"))])
+			#futarima<-predict(resarima,newdata=tableXfuture[,-c(which(names(tableXfuture) == "YEAR"),which(names(tableXfuture) == "OFFICIAL_YIELD"))],se.fit=TRUE,type="response",level=0.95,interval="prediction")
+
+			yieldPrev$safeTrend<-lm(futarima$pred~seq(1,length(futarima$pred)))$coefficients[2]
+			#yieldPrev$safeTrend<-lm(futarima$fit[,1]~seq(1,length(futarima$fit[,1])))$coefficients[2]
 	cutTrend(inizio,fine)
 	yieldPrev$refeedAutoTrend<-fine
 

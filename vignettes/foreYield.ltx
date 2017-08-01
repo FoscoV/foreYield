@@ -21,7 +21,7 @@
 \usepackage{fourier}
 \usepackage{layaureo}
 \usepackage{listings}
-\lstset{language=R,frame=single,breaklines=true,postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},captionpos=b}
+\lstset{language=R,frame=single,breaklines=true,postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},captionpos=b,columns=fullflexible}
 \usepackage[style=numeric,backend=biber,autolang=hyphen,doi=false, isbn=false, eprint=false]{biblatex}
 \addbibresource{references.bib}
 
@@ -43,7 +43,7 @@ Disponendo di un ambiente R già installato\footnote{per l'installazione si può
 \begin{lstlisting}[caption={Procedura d'installazione entro R},label=instR]
 install.packages("remotes") # nel caso non sia gia' installato
 library(remotes)
-remotes::install_github(FoscoV/foreYield)
+remotes::install_github("FoscoV/foreYield")
 \end{lstlisting}
 Le istruzioni contenute in listing \ref{instR} provvedono automaticamente all'installazione della versione più recente di \lstinline!foreYield! (od al suo aggiornamento) e delle relative dipendenze.
 Il pacchetto \lstinline!foreYield! è basato su strumenti di analisi dati forniti in altri pacchetti. La struttura del pacchetto anzichè uno script è stata adottata, oltre che per la semplificazione nella gestione delle versioni in vista di futuri aggiornamenti, per la più comoda gestione delle dipendenze.

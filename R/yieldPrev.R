@@ -70,10 +70,10 @@ relatedModel<-unique(prev)
 			cropO<-scan(,nmax=1)}
 			actualYield<-subset(actualYield,actualYield$CROP_NO == cropO)
 			}
-	if(any(names(prev)=="CROP_NO")){
-		cat(c("SIMULATED yield data contains information for the following CROPs:\n",unique(prev$CROP_NO),"\n Choose one:",fill=TRUE))
+	if(any(names(relatedModel)=="CROP_NO")){
+		cat(c("SIMULATED yield data contains information for the following CROPs:\n",unique(relatedModel$CROP_NO),"\n Choose one:",fill=TRUE))
 		cropS<-scan(,nmax=1)
-		while(any(unique(prev$CROP_NO) == cropS) == FALSE){cat("point an existing one \n ")
+		while(any(unique(relatedModel$CROP_NO) == cropS) == FALSE){cat("point an existing one \n ")
 		cropS<-scan(,nmax=1)}
 		yieldPrev$saveCrop<-cropS
 		relatedModel<-subset(relatedModel, relatedModel$CROP_NO== cropS)
@@ -103,7 +103,7 @@ relatedModel<-unique(prev)
 	#reading datas for suitable informations
 	currentYear<- max(unique(relatedModel$YEAR))
 	yieldPrev$currentYear <- currentYear
-	if(any(names(prev)=="DECADE")){
+	if(any(names(relatedModel)=="DECADE")){
 		currentDecade<- max(subset(relatedModel,relatedModel$YEAR==currentYear)$DECADE)
 		cat(c("It seems forecasting the year",currentYear,"with data till the ",currentDecade,"th decade"),fill=TRUE)
 		cat(c("Do you want to change Decade assumption? \n "))
@@ -113,7 +113,7 @@ relatedModel<-unique(prev)
 			changeYD<-scan(,what="text",nmax=1)
 		}
 		if(changeYD == "n"){
-			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
+			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(relatedmodel)=="CROP_NO"),-which(names(relatedModel)=="DECADE"),-which(names(relatedModel)=="NUTS_CODE"))]
 		}
 		if(changeYD == "y"){
 			cat(c("Digit desired Decade"))
@@ -121,7 +121,7 @@ relatedModel<-unique(prev)
 			currentDecade<-scan(,nmax=1)
 			cat(c("Digit desired Year"))
 			yieldPrev$currentYear <- scan(,nmax=1)
-			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
+			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(relatedmodel)=="CROP_NO"),-which(names(relatedModel)=="DECADE"),-which(names(relatedModel)=="NUTS_CODE"))]
 		}
 	}
 }

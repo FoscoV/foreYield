@@ -119,6 +119,8 @@ relatedModel<-unique(prev)
 			cat(c("Digit desired Decade"))
 			#suggest: loop checking that the desired decade is lower than the last one...
 			currentDecade<-scan(,nmax=1)
+			cat(c("Digit desired Year"))
+			yieldPrev$currentYear <- scan(,nmax=1)
 			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(prev)=="CROP_NO"),-which(names(prev)=="DECADE"),-which(names(prev)=="NUTS_CODE"))]
 		}
 	}

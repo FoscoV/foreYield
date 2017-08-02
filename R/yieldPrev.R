@@ -369,6 +369,33 @@ modSel <- function(standardModel,rcrit){
 }
 library(DAAG)
 
+
+randModel<-function(){
+	#experimenting Bayesian variable selection: "spike and slab"
+	yieldPrev$modelBay_formula<-c("OFFICIAL_YIELD~ ")
+	puntone<-spikeslab(OFFICIAL_YIELD~ . ,data=yieldPrev$tableXregression,max.var=4,fast=F,n.iter1=1000,n.iter2=1000,mse=T)
+	lastra<-predict(puntone,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear))
+	compleBayFormula<-function(parametro){
+		yieldPrev$modelBay_formula<- paste(yieldPrev$modelBay_formula, puntone$names[puntone$gnet.obj.vars][parametro],if(parametro == length(puntone$gnet.obj.vars)) sep=" " else sep= " +")
+	}
+	#print(as.formula(yieldPrev$model_formula))
+	lapply(X=seq(1,length(puntone$gnet.obj.vars)),FUN=compleBayFormula)
+	regrGNET<-lm(as.formula(yieldPrev$modelBay_formula),data=yieldPrev$tableXregression)
+
+	expBAYield<-predict(regrGNET,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),se.fit=TRUE,type="response",level=0.95,interval="prediction")
+	#cross validating removing each year once
+	validC<-c(CV(regrGNET)[c(1,5)])
+	#yieldPrev$CVmsRes<-c(validC[1],validC[5])
+
+	cat(c("Spike&Slam suggests as model:\n 	",yieldPrev$modelBay_formula,"\n which fits adopting: \n	"))
+	print(regrGNET$coefficients)
+	cat(c("\n and obtains:\n"))
+	print(validC)
+	cat(c("\n forecasting ",round(expBAYield$fit[1],2) ,"+/-",round(expBAYield$fit[1]-expBAYield$fit[2],2),".\n"))
+}
+
+
+
 library(pls)
 responseYield<-function(){
 	expYield <- yieldPrev$expYield

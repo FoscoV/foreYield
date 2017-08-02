@@ -358,13 +358,12 @@ modSel <- function(standardModel,rcrit){
 	yieldPrev$CVmsRes<-c(validC[1],validC[5])
 	#yieldPrev$CVmsRes<-attributes(validC)$ms
 	cat(c("SOME INFOs ABOUT THIS MODEL:"),fill=T)
-	if(standardModel == 1){
-		try(
+	try(if(standardModel == 1){
 		genizi<-as.matrix(calc.relimp(yieldPrev$modelLM,type="genizi")$genizi)
 		colnames(genizi)<-as.list("R2")
 			cat(c("\n Decomposition of R2 accordingly to (Genizi,1993): \n"),fill=TRUE)
-		print(genizi))
-		}
+		print(genizi)
+		})
 		cat(c("\n Regression coefficients:\n",yieldPrev$modelLM$coefficients),fill=T)
 }
 library(DAAG)

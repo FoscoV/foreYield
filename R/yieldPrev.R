@@ -50,8 +50,8 @@ configure<-function(depth="base"){
 actualYield<-unique(eurostat)
 relatedModel<-unique(prev)
 
-		if(any(names(actualYield)=="STAT_CROP_NO")&any(names(prev)=="CROP_NO")){names(actualYield)[names(actualYield)=="STAT_CROP_NO"]<-"CROP_NO"}else{
-		if(any(names(prev)=="STAT_CROP_NO")&any(names(eurostat)=="CROP_NO")){names(prev)[names(prev)=="STAT_CROP_NO"]<-"CROP_NO"}}
+		if(any(names(actualYield)=="STAT_CROP_NO")&any(names(relatedModel)=="CROP_NO")){names(actualYield)[names(actualYield)=="STAT_CROP_NO"]<-"CROP_NO"}else{
+		if(any(names(relatedModel)=="STAT_CROP_NO")&any(names(actualYield)=="CROP_NO")){names(relatedModel)[names(relatedModel)=="STAT_CROP_NO"]<-"CROP_NO"}}
 
 		#standarizing Official Yield Names...trying to, at least
 		if(any(names(actualYield)=="official.yield")){names(actualYield)[names(actualYield)=="official.yield"]<-"OFFICIAL_YIELD"}

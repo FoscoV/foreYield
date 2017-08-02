@@ -363,8 +363,9 @@ modSel <- function(standardModel,rcrit){
 		colnames(genizi)<-as.list("R2")
 			cat(c("\n Decomposition of R2 accordingly to (Genizi,1993): \n"),fill=TRUE)
 		print(genizi)
-		})
-		cat(c("\n Regression coefficients:\n",yieldPrev$modelLM$coefficients),fill=T)
+		},silent=T)
+		cat(c("\n Regression coefficients:\n"),fill=T)
+		print(yieldPrev$modelLM$coefficients)
 }
 library(DAAG)
 

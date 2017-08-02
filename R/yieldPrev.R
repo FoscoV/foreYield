@@ -113,7 +113,7 @@ relatedModel<-unique(prev)
 			changeYD<-scan(,what="text",nmax=1)
 		}
 		if(changeYD == "n"){
-			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(relatedmodel)=="CROP_NO"),-which(names(relatedModel)=="DECADE"),-which(names(relatedModel)=="NUTS_CODE"))]
+			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(relatedModel)=="CROP_NO"),-which(names(relatedModel)=="DECADE"),-which(names(relatedModel)=="NUTS_CODE"))]
 		}
 		if(changeYD == "y"){
 			cat(c("Digit desired Decade"))
@@ -121,7 +121,7 @@ relatedModel<-unique(prev)
 			currentDecade<-scan(,nmax=1)
 			cat(c("Digit desired Year"))
 			yieldPrev$currentYear <- scan(,nmax=1)
-			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(relatedmodel)=="CROP_NO"),-which(names(relatedModel)=="DECADE"),-which(names(relatedModel)=="NUTS_CODE"))]
+			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(relatedModel)=="CROP_NO"),-which(names(relatedModel)=="DECADE"),-which(names(relatedModel)=="NUTS_CODE"))]
 		}
 	}
 }

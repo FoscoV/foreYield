@@ -124,6 +124,7 @@ relatedModel<-unique(prev)
 			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(relatedModel)=="CROP_NO"),-which(names(relatedModel)=="DECADE"),-which(names(relatedModel)=="NUTS_CODE"))]
 		}
 	}
+	yieldPrev$relatedModel<-yieldPrev$relatedModel[!colSumss(yieldPrev$relatedModel%in%NA]
 }
 		#save information for saveYieldSession()
 
@@ -361,6 +362,7 @@ modSel <- function(standardModel,rcrit){
 		colnames(genizi)<-as.list("R2")
 		cat(c("SOME INFOs ABOUT THIS MODEL:  \n Decomposition of R2 accordingly to (Genizi,1993): \n"),fill=TRUE)
 		print(genizi)}
+		cat(c("\n Regression coefficients:\n",yieldPrev$modelLM$coefficients),fill=T)
 
 }
 library(DAAG)

@@ -124,7 +124,7 @@ relatedModel<-unique(prev)
 			yieldPrev$relatedModel<-subset(relatedModel,relatedModel$DECADE == currentDecade)[,c(-which(names(relatedModel)=="CROP_NO"),-which(names(relatedModel)=="DECADE"),-which(names(relatedModel)=="NUTS_CODE"))]
 		}
 	}
-	yieldPrev$relatedModel<-yieldPrev$relatedModel[!colSumss(yieldPrev$relatedModel%in%NA]
+	yieldPrev$relatedModel<-yieldPrev$relatedModel[sapply(yieldPrev$relatedModel, function(x) !any(is.na(x)))]
 }
 		#save information for saveYieldSession()
 

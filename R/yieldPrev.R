@@ -387,6 +387,11 @@ if(any(names(yieldPrev) == "due2trend")){cat(c("\n \n Due to the marked trends, 
 cat(c("	\n
 	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2)))
 
+
+	#last years everage
+	lastResults<-yieldPrev$actualYield[which(yieldPrev$actualYield$YEAR>=yieldPrev$currentYear-5),which(names(yieldPrev$actualYield)=="OFFICIAL_YIELD")]
+	cat(c("\n	in the last ",length(lastResults)," (",yieldPrev$currentYear-1,"-", yieldPrev$currentYear-5, ") the average yield was ",mean(lastResults)," +/- ",var(lastResults),"."))
+
 	#crossVal plot
 	#acquire loocv single data
 	motoCross<-cv.lm(data=yieldPrev$tableXregression, formula(yieldPrev$modelLM), m=length(yieldPrev$tableXregression[,1]),printit=FALSE)

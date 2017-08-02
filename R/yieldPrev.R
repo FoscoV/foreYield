@@ -327,7 +327,7 @@ modSel <- function(standardModel,rcrit){
 	if(standardModel == "1" | standardModel == "standard"){
 		allSign <- regsubsets(OFFICIAL_YIELD~.,data=tableXregression[,c(-which(names(tableXregression)=="YEAR"))],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
 	if(standardModel == "2" | standardModel == "enhanced"){
-		allSign <- regsubsets(OFFICIAL_YIELD~.^2+.,data=tableXregression[,c(-1)],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
+		allSign <- regsubsets(OFFICIAL_YIELD~.^2+.,data=tableXregression[,c(-which(names(tableXregression)=="YEAR"))],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
 	#renaming predictors with numbers
 	summaSign<-summaryHH(allSign,names=seq(1,length(allSign$xnames)),statistics="adjr2")
 	if(missing(rcrit)){plot(summaSign,col="green",cex=0.8)}

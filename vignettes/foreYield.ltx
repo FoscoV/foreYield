@@ -161,7 +161,7 @@ NUTS\_CODE e CROP\_NO non sono obbligatori. Infatti database già modificati per
 La decade, se presente, può essere selezionata, anche se di default viene suggerita la più avanzata. 
 
 L'anno per il quale viene effettuata la previsione di resa è assunto automaticamente essere il più recente, questa opzione non è configurabile. Gli anni precedenti all'ultimo sono, in ogni caso, oggetto di validazione crociata e pertanto previsti e confrontati con il risultato reale in maniera automatica.
-\section{Trend}
+\section{Trend}\label{Trendo}
 I dati ufficiali dei raccolti possono essere composti da due differenti componenti: una climatica (considerata dai modelli) ed una tecnologica (non considerata dai modelli).
 
 L'adozione di una lunga serie di dati, seppur più suscettibile di comprendere fenomeni esogeni ai regressori, offre una maggiore validità statistica mantenendo il numero di osservazioni (gli anni considerati) nettamente maggiore del numero dei regressori.
@@ -206,7 +206,7 @@ Si osservi che la selezione di un singolo regressore porta, in seguito alla rimo
 Qualora gli andamenti della serie storica lo  esigano, è possibile sottrarre più di una componente tecnologica da diversi intervalli temporali.
 
 Si noti che la sottrazione di un trend tecnologico esauritosi prima della fine della serie storica sottende implicitamente che la componente tecnologica sia rimasta costantemente presente in seguito ed è pertanto automaticamente sottratta.
-I trend sottratti sono considerati aventi andamento lineare, in ragione della dinamica di realizzazione del trend che risulta legata alla diffusione di pratiche agricole e che pertanto si caratterizza più ragionevolmente per un andamento geometrico\cite{swanso79}.
+I trend sottratti sono considerati aventi andamento lineare, in ragione della dinamica di realizzazione del trend che risulta legata alla diffusione di pratiche agricole e che pertanto si caratterizza più ragionevolmente per un andamento geometrico\cite{swanson79}.
 
 A seguito della rimozione del trend viene ripresentato il grafico di cui in figura \ref{offYield} i cui dati sono però modificati, come	 osservabile dal confronto tra le figure \ref{offYield} e \ref{deTrend}.
 
@@ -237,12 +237,13 @@ La selezione del modello avviene ad opera dell'utente sulla base delle proprie c
 
 
 A seguito della selezione, viene fornita indicazione della significatività dei regressori. Per ciascun regressore è presentato il corrispondente contributo al complessivo $R^2$\cite{relaimpo}\cite{genizi}.
+Dei regresori sono anche riportati i coefficienti di regressione di modo da comprendere la natura del modello selezionato. Per cambiare le scelte operate, considerate il paragrafo \ref{rifo}.
 \section{Risultati}
 \lstinline!foreYield! offre la stima effettuata mediante regressione delle componenti principali (PCR)\cite{pls}. Questa tecnica offre una maggiore tutela dalla collinearità della regressione. Essa non richiede alcun intervento da parte dell'utente e ne sono presentati direttamente i risultati.
 La PCR può costituire una buon termine di confronto per i risultati ottenuti con il modello regressivo. Affinità tra le due previsioni suggeriscono che il modello adottato non sia afflitto da fenomeni di over-fitting o collinearità che inficino la validità previsionale.
 
 A seguito dell'indicazione del modello viene effettuata la validazione crociata\footnote{La metodologia adottata per la Cross Validation è omogeneamente Leave One Out (LOO), che meglio simula le condizioni in cui i sistemi predittivi si trovano ad operare e che quindi meglio ne rappresenta la validità} (Cross Validation)  sia dei risultati del modello sia della Regressione per Componenti Principali (PCR). Di quest'ultima,effettuata in completa autonomia dal programma, sono presentati direttamente i risultati.
-I risultati della Cross Validazione sono presentati in un grafico (riportato in figura \ref{fig:resul}) dove si hanno anche i valori aggiornati con i trend tecnologici (nel	 caso fossero stati rimossi).
+I risultati della Cross Validazione sono presentati in un grafico (riportato in figura \ref{fig:resul}) dove si hanno anche i valori aggiornati con i trend tecnologici (nel caso fossero stati rimossi).
 
 I risultati basati sulla sola componente climatica determinante i raccolti sono:
 \begin{enumerate}
@@ -264,9 +265,16 @@ del modello, generati contestualmente alla schermata di cui in \ref{response}\la
 Per l'applicabilità dei risultati dell'analisi è necessario considerare i trend tecnologici presenti ma non considerati nella regressione;
 gli effetti della componente tecnologica in OFFICIAL\_YIELD, precedentemente sottratti, vengono sommati (esplicitamente).
 
-Per offrire un termine di confronto della previsione al lordo della componente di trend tecnologico, viene presentata la previsione (aliena ad ogni simulazione agronomica) basata sulla sola serie storica dei dati di OFFICIAL\_YIELD \cite{forecast}.
+Per offrire un termine di confronto della previsione al lordo della componente di trend tecnologico, viene presentata la previsione (aliena ad ogni simulazione agronomica) basata sulla sola serie storica dei dati di OFFICIAL\_YIELD \cite{forecast}, oltre alla media degli ultimi anni.
 
 I risultati vengono forniti all'utente in una schermata riassuntiva degli esiti, esemplificativamente riportata in figura \ref{response}.
+\subsection{Altre regressioni}\label{rifo}
+L'uso della funzione \lstinline!virgilio()! al termine dell'iter consente di procedere con una nuova elaborazione dei dati modificando riconsiderando i trend presenti (\ref{Trendo}) e la selezione del modello regressivo.
+
+\subsubsection*{Bayesian approach-EXPERIMENTAL}
+Qualora insoddisfatti dei risultati conseguiti, prima di ricorrere al procedimento manuale, è consigliabile ricorrere alla funzione \lstinline!randModel()! questa tenta di generalizzare l'approccio \emph{Spike and Slab}. L'implementazione di questo metodo bayesano per la selezione delle variabili non richiede interazione con l'utente e pertanto la funzione consente di ottenere un risultato finale direttamente\footnote{A conclusione dell'iter principale, i dati sono già tutti raccolti ed organizzati}.
+
+Poichè l'approccio ha un fondamento stocastico, reiterando il comando \lstinline!randModel()! si ottiene un suggerimento differente.2
 
 \nocite{*}
 \pagebreak

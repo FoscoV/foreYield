@@ -36,7 +36,7 @@ configure<-function(depth="base"){
 		allData<-file.choose()
 		write.table(gsub(gsub(scan(file=allData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjDtb.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
 		longData<-read.csv("adjDtb.csv")
-		library(tidyr)
+
 		bothData<-spread(longData,INDICATOR_CODE,INDICATOR_VALUE)
 		write.csv(bothData[,c(which(names(bothData)=="YEAR"),which(names(bothData)=="official.yield"|names(bothData)=="Officiall yield"|names(bothData)=="OFFICIAL_YIELD"|names(bothData)=="Official.yield"|names(bothData)=="official_yield"|names(bothData)=="Official_yield"))],"adjOffi.csv",quote=FALSE,row.names=FALSE)
 		write.csv(bothData[,c(-which(names(bothData)=="official.yield"|names(bothData)=="Officiall yield"|names(bothData)=="OFFICIAL_YIELD"|names(bothData)=="Official.yield"|names(bothData)=="official_yield"|names(bothData)=="Official_yield"))],"adjSimu.csv",quote=FALSE,row.names=FALSE)
@@ -128,7 +128,8 @@ relatedModel<-unique(prev)
 }
 		#save information for saveYieldSession()
 
-
+library(tidyr)
+library(spikeslab)
 
 ###working on official trends
 library(tseries)
@@ -395,7 +396,7 @@ randModel<-function(){
 }
 
 
-
+library(bartMachine)
 library(pls)
 responseYield<-function(){
 	expYield <- yieldPrev$expYield
@@ -411,13 +412,14 @@ responseYield<-function(){
 	cat(c("\n \n Principal Component Regression (PCR) predicted \n ",round(pcr4,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[8],2)," using 4 components \n ",round(pcr3,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[6],2)," using 3 components."))
 if(any(names(yieldPrev) == "due2trend")){cat(c("\n \n Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
 "),fill=TRUE)}
+bartolomeoMod()
 cat(c("	\n
-	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2)))
+	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2),"."))
 
 
 	#last years everage
 	lastResults<-yieldPrev$actualYield[which(yieldPrev$actualYield$YEAR>=yieldPrev$currentYear-5),which(names(yieldPrev$actualYield)=="OFFICIAL_YIELD")]
-	cat(c("\n	in the last ",length(lastResults)," (",yieldPrev$currentYear-1,"-", yieldPrev$currentYear-5, ") the average yield was ",mean(lastResults)," +/- ",var(lastResults),"."))
+	cat(c("\n	In the last ",length(lastResults)," (",yieldPrev$currentYear-1,"-", yieldPrev$currentYear-5, ") the average yield was ",round(mean(lastResults),2)," +/- ",round(var(lastResults),2),"."))
 
 	#crossVal plot
 	#acquire loocv single data
@@ -499,3 +501,25 @@ valiTrend<-function(){
 			virgilio()}
 	}
 }
+
+bartolomeoMod<-function(){
+	anno<-yieldPrev$currentYear
+	paese<-yieldPrev$saveCountry
+	coltura<-yieldPrev$saveCrop
+	#BARmodel<-bartMachineCV(yieldPrev$tableXregression[,-c(1,2)],yieldPrev$tableXregression[,2])
+	BARmodel<-bartMachine(yieldPrev$tableXregression[,-c(1,2)],yieldPrev$tableXregression[,2],verbose=F)
+	correnti<-names(subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear))
+	predetti<-names(yieldPrev$tableXregression[,-c(1,2)])
+	buono<-subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear)[,unlist(lapply(X=correnti,FUN=function(nome){if(any(nome==predetti)){return(which(correnti==nome))}}))]
+	BARpred<-calc_credible_intervals(BARmodel,buono)
+	predCR<-mean(BARpred)
+	errCR<-predCR-BARpred[1]
+
+	#cat(c("=========================================================="),fill=T)
+	#cat(c("=========================================================="),fill=T)
+	#cat(c("Bayesian Additive Regression Tree (BART) running on provided data for crop ", coltura," in ",paese," esteems the yield for ",anno, " at ",round(predCR,2),"+/-",round(errCR,2),".\n"))
+	cat(c("\nBayesian Additive Regression Tree (BART) running on provided data for crop ", coltura," in ",paese," esteems the yield for ",anno, " at ",round(predCR,2),"+/-",round(errCR,2),".\n"))
+	#cat(c("=========================================================="),fill=T)
+	#cat(c("=========================================================="),fill=T)
+}
+

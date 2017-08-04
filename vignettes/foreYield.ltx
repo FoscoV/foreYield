@@ -242,7 +242,7 @@ Dei regresori sono anche riportati i coefficienti di regressione di modo da comp
 \lstinline!foreYield! offre la stima effettuata mediante regressione delle componenti principali (PCR)\cite{pls}. Questa tecnica offre una maggiore tutela dalla collinearità della regressione. Essa non richiede alcun intervento da parte dell'utente e ne sono presentati direttamente i risultati.
 La PCR può costituire una buon termine di confronto per i risultati ottenuti con il modello regressivo. Affinità tra le due previsioni suggeriscono che il modello adottato non sia afflitto da fenomeni di over-fitting o collinearità che inficino la validità previsionale.
 
-A seguito dell'indicazione del modello viene effettuata la validazione crociata\footnote{La metodologia adottata per la Cross Validation è omogeneamente Leave One Out (LOO), che meglio simula le condizioni in cui i sistemi predittivi si trovano ad operare e che quindi meglio ne rappresenta la validità} (Cross Validation)  sia dei risultati del modello sia della Regressione per Componenti Principali (PCR). Di quest'ultima,effettuata in completa autonomia dal programma, sono presentati direttamente i risultati.
+A seguito dell'indicazione del modello viene effettuata la validazione crociata\footnote{La metodologia adottata per la Cross Validation è omogeneamente Leave One Out (LOO), che meglio simula le condizioni in cui i sistemi predittivi si trovano ad operare e che quindi meglio ne rappresenta la validità} (Cross Validation)  sia dei risultati del modello sia della Regressione per Componenti Principali (PCR). Di quest'ultima,effettuata in completa autonomia dal programma, sono presentati direttamente i risultati; analogamente sono proposti i risultati del modello BART (\cite{bart}).
 I risultati della Cross Validazione sono presentati in un grafico (riportato in figura \ref{fig:resul}) dove si hanno anche i valori aggiornati con i trend tecnologici (nel caso fossero stati rimossi).
 
 I risultati basati sulla sola componente climatica determinante i raccolti sono:
@@ -274,7 +274,7 @@ L'uso della funzione \lstinline!virgilio()! al termine dell'iter consente di pro
 \subsubsection*{Bayesian approach-EXPERIMENTAL}
 Qualora insoddisfatti dei risultati conseguiti, prima di ricorrere al procedimento manuale, è consigliabile ricorrere alla funzione \lstinline!randModel()! questa tenta di generalizzare l'approccio \emph{Spike and Slab}. L'implementazione di questo metodo bayesano per la selezione delle variabili non richiede interazione con l'utente e pertanto la funzione consente di ottenere un risultato finale direttamente\footnote{A conclusione dell'iter principale, i dati sono già tutti raccolti ed organizzati}.
 
-Poichè l'approccio ha un fondamento stocastico, reiterando il comando \lstinline!randModel()! si ottiene un suggerimento differente.2
+Poichè l'approccio ha un fondamento stocastico, reiterando il comando \lstinline!randModel()! si ottiene un suggerimento differente.
 
 \nocite{*}
 \pagebreak

@@ -412,7 +412,7 @@ responseYield<-function(){
 	cat(c("\n \n Principal Component Regression (PCR) predicted \n ",round(pcr4,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[8],2)," using 4 components \n ",round(pcr3,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[6],2)," using 3 components."))
 if(any(names(yieldPrev) == "due2trend")){cat(c("\n \n Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
 "),fill=TRUE)}
-bartolomeoMod()
+bartolomeoMod(depthing=F)
 cat(c("	\n
 	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2),"."))
 
@@ -502,12 +502,18 @@ valiTrend<-function(){
 	}
 }
 
-bartolomeoMod<-function(){
+bartolomeoMod<-function(cpusa,depthing=T){
+	if(length(cpusa)>0){
+		set_bart_machine_num_cores(cpusa)
+	}
 	anno<-yieldPrev$currentYear
 	paese<-yieldPrev$saveCountry
 	coltura<-yieldPrev$saveCrop
-	#BARmodel<-bartMachineCV(yieldPrev$tableXregression[,-c(1,2)],yieldPrev$tableXregression[,2])
-	BARmodel<-bartMachine(yieldPrev$tableXregression[,-c(1,2)],yieldPrev$tableXregression[,2],verbose=F)
+	if(depthing){
+		BARmodel<-bartMachineCV(yieldPrev$tableXregression[,-c(1,2)],yieldPrev$tableXregression[,2])
+	}else{
+		BARmodel<-bartMachine(yieldPrev$tableXregression[,-c(1,2)],yieldPrev$tableXregression[,2],verbose=F)
+	}
 	correnti<-names(subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear))
 	predetti<-names(yieldPrev$tableXregression[,-c(1,2)])
 	buono<-subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear)[,unlist(lapply(X=correnti,FUN=function(nome){if(any(nome==predetti)){return(which(correnti==nome))}}))]

@@ -276,6 +276,13 @@ Qualora insoddisfatti dei risultati conseguiti, prima di ricorrere al procedimen
 
 Poichè l'approccio ha un fondamento stocastico, reiterando il comando \lstinline!randModel()! si ottiene un suggerimento differente.
 
+
+Un approccio differente (random tree) è usato per il modello BART\cite{bart} che viene elaborato a termine dell'analisi e sottoposto all'utente come termine di confronto.
+È disponibile un implementazione che procede alla \emph{cross validazione} dei modelli individuati con random forest. Meno soggetto a \emph{bias}, richiede una più lunga elaborazione. Prima dell'uso si consiglia di leggerne la documetazione: \lstinline!?bartolomeoMod!.
+
+
+Tra i vantaggi di questi due approcci va segnalata la tendenza ad essere poco soggetti a collinearità.
+
 \nocite{*}
 \pagebreak
 \printbibliography[heading=bibintoc]

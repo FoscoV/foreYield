@@ -1,4 +1,4 @@
-library(trend)
+####library(trend)
 
 virgilio<-function(){
 	if(any(names(yieldPrev)== "actualYield")){}else{

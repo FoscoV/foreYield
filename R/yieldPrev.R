@@ -128,13 +128,13 @@ relatedModel<-unique(prev)
 }
 		#save information for saveYieldSession()
 
-library(tidyr)
-library(spikeslab)
+####library(tidyr)
+####library(spikeslab)
 
 ###working on official trends
-library(tseries)
-library(forecast)
-library(ggplot2)
+####library(tseries)
+####library(forecast)
+####library(ggplot2)
 #providiing function for check actual existance of trend
 checkTrends<-function(){
 	attach(yieldPrev)
@@ -260,7 +260,7 @@ breakTrends<-function(){ #this doesn't work
 	detach(yieldPrev)
 
 }
-library(MASS)
+####library(MASS)
 cutTrend<-function(inizio,fine){
 	if(any(names(yieldPrev) == "due2trend")){} else {
 		yieldPrev$due2trend<-data.frame(YEAR=yieldPrev$actualYield$YEAR,trended=rep(0,length=length(yieldPrev$actualYield$YEAR)))
@@ -305,9 +305,9 @@ cutTrend<-function(inizio,fine){
 }
 
 
-library(leaps)
-library(HH)
-library(relaimpo)
+####library(leaps)
+####library(HH)
+####library(relaimpo)
 modSel <- function(standardModel,rcrit){
 	tableXregression <-merge(yieldPrev$flatYield , yieldPrev$relatedModel , by="YEAR")
 	#clean this table, 0 columns are going to mess it up
@@ -368,7 +368,7 @@ modSel <- function(standardModel,rcrit){
 		cat(c("\n Regression coefficients:\n"),fill=T)
 		print(yieldPrev$modelLM$coefficients)
 }
-library(DAAG)
+####library(DAAG)
 
 
 randModel<-function(){
@@ -396,8 +396,8 @@ randModel<-function(){
 }
 
 
-library(bartMachine)
-library(pls)
+####library(bartMachine)
+####library(pls)
 responseYield<-function(){
 	expYield <- yieldPrev$expYield
 	knoTime<-yieldPrev$breakPoint

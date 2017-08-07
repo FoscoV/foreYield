@@ -12,7 +12,7 @@ bartolomeoMod(cpus,depthing=TRUE)
 %- maybe also 'usage' for other objects documented here.
 \details{
 \itemize{
-\item cpus	bartMachine which handles the computations allow for heavy parallelization. You can here provide your number of cpus to speed up the processing.
+\item cpus	bartMachine which handles the computations allow for heavy parallelization. You can here provide your number of cpus to speed up the processing (try num_cores+1).
 \item depthing	on default doeas the CrossValidated version (what you are probably looking for: MY SUGGESTION IS NOT TO DO ANYTHING)
 }
 Please note that due to its own structure this function will work after the successful fullfillment of the data structure and collection granted by virgilio's guide.
@@ -34,7 +34,7 @@ Adam Kapelner, Justin Bleich (2016). bartMachine: Machine Learning
 %%  ~~who you are~~
 }
 \note{
-No argument are supposed when calling the function
+Only cpu's number for parallelization are required, whatever else will be self managed.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

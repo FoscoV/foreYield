@@ -502,8 +502,8 @@ valiTrend<-function(){
 	}
 }
 
-bartolomeoMod<-function(cpusa,depthing=T){
-	if(length(cpusa)>0){
+bartolomeoMod<-function(cpusa=1,depthing=T){
+	if(cpusa>1){
 		set_bart_machine_num_cores(cpusa)
 	}
 	anno<-yieldPrev$currentYear

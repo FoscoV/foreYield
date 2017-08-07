@@ -11,9 +11,10 @@ bartolomeoMod(cpus,depthing=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \details{
-cpus	bartMachine which handles the computations allow for heavy parallelization. You can here provide your number of cpus to speed up the processing.
-depthing	on default doeas the CrossValidated version (what you are probably looking for: MY SUGGESTION IS NOT TO DO ANYTHING)
-
+\begin{description}
+\item[cpus]	bartMachine which handles the computations allow for heavy parallelization. You can here provide your number of cpus to speed up the processing.
+\item[depthing]	on default doeas the CrossValidated version (what you are probably looking for: MY SUGGESTION IS NOT TO DO ANYTHING)
+\end{description}
 Please note that due to its own structure this function will work after the successful fullfillment of the data structure and collection granted by virgilio's guide.
 }
 \value{

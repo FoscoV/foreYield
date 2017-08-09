@@ -412,7 +412,7 @@ responseYield<-function(){
 	cat(c("\n \n Principal Component Regression (PCR) predicted \n ",round(pcr4,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[8],2)," using 4 components \n ",round(pcr3,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[6],2)," using 3 components."))
 if(any(names(yieldPrev) == "due2trend")){cat(c("\n \n Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
 "),fill=TRUE)}
-bartolomeoMod(depthing=F)
+try(bartolomeoMod(depthing=F),silent=TRUE)
 cat(c("	\n
 	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2),"."))
 
@@ -503,6 +503,7 @@ valiTrend<-function(){
 }
 
 bartolomeoMod<-function(cpusa=1,depthing=T){
+	library(bartMachine)
 	if(cpusa>1){
 		set_bart_machine_num_cores(cpusa)
 	}

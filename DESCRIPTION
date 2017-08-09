@@ -5,7 +5,8 @@ Version: 1.1.3
 Date: 2017-08-02
 Author: Fosco Vesely
 Maintainer: Fosco Vesely <fosco@tana.it>
-Depends:tseries,forecast,ggplot2,MASS,leaps,HH,DAAG,tidyr,pls,relaimpo,trend,spikeslab,bartMachine
+Depends:tseries,forecast,ggplot2,MASS,leaps,HH,DAAG,tidyr,pls,relaimpo,trend,spikeslab
+Suggests:bartMachine
 Description: Using past yield and model predictors, forecast the yield resulting for the current (the last) year (simulated year). Nothing new but the interface "virgilio()" providing easy use without any (almost) knowledge of R
 License: GPL2
 Suggests: R.rsp

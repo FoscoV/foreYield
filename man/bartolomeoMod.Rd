@@ -35,6 +35,10 @@ Adam Kapelner, Justin Bleich (2016). bartMachine: Machine Learning
 }
 \note{
 Only cpu's number for parallelization are required, whatever else will be self managed.
+
+Please note that the Java implementation require rJava working as wrapper.
+Due to it's known issues on some platforms, this whole is switched to "suggestion" level.
+To use it adopt install_github("FoscoV/foreYield",dependencies=T) during install phase. You'll have to take care of your Java machine.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

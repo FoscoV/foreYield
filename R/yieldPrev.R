@@ -109,7 +109,7 @@ relatedModel<-unique(prev)
 		cat(c("It seems forecasting the year",currentYear,"with data till the ",currentDecade,"th decade"),fill=TRUE)
 		cat(c("Do you want to change Decade assumption? \n "))
 		changeYD<-scan(,what="text",nmax=1)
-		while(changeYD != "y" & changeYD != "n"){
+		while(changeYD != "y" & changeYD != "n" & length(changeYD)==0){
 			cat("answer y or n")
 			changeYD<-scan(,what="text",nmax=1)
 		}

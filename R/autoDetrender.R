@@ -1,7 +1,7 @@
 ####library(trend)
 
 virgilio<-function(reload=F){
-	if(reload=F){
+	if(reload==F){
 		if(any(names(yieldPrev)== "actualYield")){}else{
 		suppressWarnings(configure())}
 	}else{

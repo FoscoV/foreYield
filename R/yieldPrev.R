@@ -4,7 +4,7 @@
 }
 ###CONFIGURATION
 configure<-function(depth="base"){
-	if(depth="base"){
+	if(depth=="base"){
 		cat(c("Do you have a single file database or official and simulation split in two different files? \n 1.single file \n 2. double files \n (answer by numer)"),fill=TRUE)
 		numFiles<-scan(,nmax=1)
 		while(numFiles != 1 & numFiles != 2){cat(c(" 1 and 2 are the only answers supported  \n 1.single file \n 2. double files \n "))

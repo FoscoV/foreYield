@@ -5,6 +5,7 @@ virgilio<-function(reload=F){
 		if(any(names(yieldPrev)== "actualYield")){}else{
 		suppressWarnings(configure())}
 	}else{
+		rm(list=ls(yieldPrev),envir=yieldPrev)
 		suppressWarnings(configure(depth="reload"))
 	}
 

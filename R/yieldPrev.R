@@ -530,8 +530,3 @@ bartolomeoMod<-function(cpusa=1,depthing=T){
 	#cat(c("=========================================================="),fill=T)
 	#cat(c("=========================================================="),fill=T)
 }
-
-#foreClean<-function(){
-#	rm(list=ls(SAsobEN),envir=SAsobEN)
-#}
-

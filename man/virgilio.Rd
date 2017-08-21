@@ -7,12 +7,14 @@
 It just provides a supervised path across the story. If you want to use other function step by step and not this one, the results are the same.
 }
 \usage{
-virgilio()
+virgilio(reload=F)
 }
 %- maybe also 'usage' for other objects documented here.
 \details{
 Actually it doesn't do anything, but sort the other function (it doesn't save nor load) from earlier to later stages of the proceedings.
 It's something similar tto a scout or a tutor managing that everything works fine (NB: that's the aim).
+
+reload allow to skip the databases selection assuming you are reloading the one(s) used before.
 }
 \value{
 %%  ~Describe the value returned

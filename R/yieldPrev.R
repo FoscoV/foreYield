@@ -489,7 +489,7 @@ valiTrend<-function(){
 	if(danger >= 2.6){cat(c("\n ADVICE: \n The marked trend related dynamics don't fit with the data! \n "))}
 	if(sigNO < sigW|danger >= 2.6){cat(c("Do you want to reset the trend marked and proceed again? (y/n) \n"),fill=T)
 		reBea<-scan(,what="text",nmax=1)
-		while(any(length(reBea)==0,reBea != "y" , reBea != "n"){
+		while(any(c(length(reBea)==0,reBea != "y" , reBea != "n"))){
 			cat("answer y or n")
 			reBea<-scan(,what="text",nmax=1)
 		}

@@ -1,13 +1,16 @@
 ####library(trend)
 
-virgilio<-function(){
-	if(any(names(yieldPrev)== "actualYield")){}else{
-	suppressWarnings(configure())
-	#cleaning working directory
-	unlink(c("adjOffi.csv","adjSimu.csv"))
-
-
+virgilio<-function(reload=F){
+	if(reload=F){
+		if(any(names(yieldPrev)== "actualYield")){}else{
+		suppressWarnings(configure())}
+	}else{
+		suppressWarnings(configure(depth="reload"))
 	}
+
+	#cleaning working directory
+	#unlink(c("adjOffi.csv","adjSimu.csv"))
+
 	suppressWarnings(checkTrends())
 	if(suppressWarnings(adf.test(yieldPrev$flatYield$OFFICIAL_YIELD)$p.value) > 0.25&yieldPrev$flattyn == "y") {suppressWarnings(try(autoProposal(),silent=T))}
 	while(yieldPrev$flattyn == "y"){

@@ -4,44 +4,45 @@
 }
 ###CONFIGURATION
 configure<-function(depth="base"){
-	cat(c("Do you have a single file database or official and simulation split in two different files? \n 1.single file \n 2. double files \n (answer by numer)"),fill=TRUE)
-	numFiles<-scan(,nmax=1)
-	while(numFiles != 1 & numFiles != 2){cat(c(" 1 and 2 are the only answers supported  \n 1.single file \n 2. double files \n "))
+	if(depth="base"){
+		cat(c("Do you have a single file database or official and simulation split in two different files? \n 1.single file \n 2. double files \n (answer by numer)"),fill=TRUE)
 		numFiles<-scan(,nmax=1)
-	}
-	if(numFiles == 2){
-		#find out data-files
-		#cat("If you created your csv databases using MS Office, write <1> here, else <0>", fill=TRUE)
-		#msoffice<-scan(,nmax=1)
-		cat("Provide OFFICIAL yield database",fill=TRUE)
-		offiData<-file.choose()
-		write.table(gsub(gsub(scan(file=offiData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjOffi.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+		while(numFiles != 1 & numFiles != 2){cat(c(" 1 and 2 are the only answers supported  \n 1.single file \n 2. double files \n "))
+			numFiles<-scan(,nmax=1)
+		}
+		if(numFiles == 2){
+			#find out data-files
+			#cat("If you created your csv databases using MS Office, write <1> here, else <0>", fill=TRUE)
+			#msoffice<-scan(,nmax=1)
+			cat("Provide OFFICIAL yield database",fill=TRUE)
+			offiData<-file.choose()
+			write.table(gsub(gsub(scan(file=offiData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjOffi.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
 
-	#	if(msoffice == 1) eurostat<-read.table(file.choose(), header=T, sep=";") else eurostat<-read.csv(file.choose())
+		#	if(msoffice == 1) eurostat<-read.table(file.choose(), header=T, sep=";") else eurostat<-read.csv(file.choose())
 
 
-		cat("Provide SIMULATE yield database",fill=TRUE)
-		simuData<-file.choose()
-		if(basename(simuData)=="PredictoIndicis.txt"){
-			predInd<-read.csv(simuData)
-			predInd$INDICATOR_VALUE<-as.numeric(as.character(predInd$INDICATOR_VALUE))
-			predIndL<-spread(predInd,INDICATOR_CODE,INDICATOR_VALUE)
-			write.csv(predIndL,file="adjSimu.csv",row.names=FALSE)
-		}else{
-			write.table(gsub(gsub(scan(file=simuData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjSimu.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+			cat("Provide SIMULATE yield database",fill=TRUE)
+			simuData<-file.choose()
+			if(basename(simuData)=="PredictoIndicis.txt"){
+				predInd<-read.csv(simuData)
+				predInd$INDICATOR_VALUE<-as.numeric(as.character(predInd$INDICATOR_VALUE))
+				predIndL<-spread(predInd,INDICATOR_CODE,INDICATOR_VALUE)
+				write.csv(predIndL,file="adjSimu.csv",row.names=FALSE)
+			}else{
+				write.table(gsub(gsub(scan(file=simuData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjSimu.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+			}
+		}
+		if(numFiles == 1){
+			cat(c("Point out your database \n"))
+			allData<-file.choose()
+			write.table(gsub(gsub(scan(file=allData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjDtb.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+			longData<-read.csv("adjDtb.csv")
+
+			bothData<-spread(longData,INDICATOR_CODE,INDICATOR_VALUE)
+			write.csv(bothData[,c(which(names(bothData)=="YEAR"),which(names(bothData)=="official.yield"|names(bothData)=="Officiall yield"|names(bothData)=="OFFICIAL_YIELD"|names(bothData)=="Official.yield"|names(bothData)=="official_yield"|names(bothData)=="Official_yield"))],"adjOffi.csv",quote=FALSE,row.names=FALSE)
+			write.csv(bothData[,c(-which(names(bothData)=="official.yield"|names(bothData)=="Officiall yield"|names(bothData)=="OFFICIAL_YIELD"|names(bothData)=="Official.yield"|names(bothData)=="official_yield"|names(bothData)=="Official_yield"))],"adjSimu.csv",quote=FALSE,row.names=FALSE)
 		}
 	}
-	if(numFiles == 1){
-		cat(c("Point out your database \n"))
-		allData<-file.choose()
-		write.table(gsub(gsub(scan(file=allData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjDtb.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
-		longData<-read.csv("adjDtb.csv")
-
-		bothData<-spread(longData,INDICATOR_CODE,INDICATOR_VALUE)
-		write.csv(bothData[,c(which(names(bothData)=="YEAR"),which(names(bothData)=="official.yield"|names(bothData)=="Officiall yield"|names(bothData)=="OFFICIAL_YIELD"|names(bothData)=="Official.yield"|names(bothData)=="official_yield"|names(bothData)=="Official_yield"))],"adjOffi.csv",quote=FALSE,row.names=FALSE)
-		write.csv(bothData[,c(-which(names(bothData)=="official.yield"|names(bothData)=="Officiall yield"|names(bothData)=="OFFICIAL_YIELD"|names(bothData)=="Official.yield"|names(bothData)=="official_yield"|names(bothData)=="Official_yield"))],"adjSimu.csv",quote=FALSE,row.names=FALSE)
-	}
-
 	eurostat<-read.csv("adjOffi.csv")
 	prev <- read.csv("adjSimu.csv")
 	#here ends the importing data issue, from here they are only structured
@@ -328,7 +329,7 @@ modSel <- function(standardModel,rcrit){
 	if(standardModel == "1" | standardModel == "standard"){
 		allSign <- regsubsets(OFFICIAL_YIELD~.,data=tableXregression[,c(-which(names(tableXregression)=="YEAR"))],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
 	if(standardModel == "2" | standardModel == "enhanced"){
-		allSign <- regsubsets(OFFICIAL_YIELD~.^2+.,data=tableXregression[,c(-which(names(tableXregression)=="YEAR"))],nbest=2,method="exhaustive",nvmax=4, really.big=TRUE)}
+		allSign <- regsubsets(OFFICIAL_YIELD~.^2+.,data=tableXregression[,c(-which(names(tableXregression)=="YEAR"))],nbest=2,nvmax=4, really.big=TRUE)}#,method="exhaustive"
 	#renaming predictors with numbers
 	summaSign<-summaryHH(allSign,names=seq(1,length(allSign$xnames)),statistics="adjr2")
 	if(missing(rcrit)){plot(summaSign,col="green",cex=0.8)}
@@ -529,4 +530,8 @@ bartolomeoMod<-function(cpusa=1,depthing=T){
 	#cat(c("=========================================================="),fill=T)
 	#cat(c("=========================================================="),fill=T)
 }
+
+#foreClean<-function(){
+#	rm(list=ls(SAsobEN),envir=SAsobEN)
+#}
 

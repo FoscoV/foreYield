@@ -406,11 +406,9 @@ responseYield<-function(){
 		trendMissing<-mean(knoTime$trend[which(knoTime$finish == max(knoTime$finish))])+yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )]} else {trendMissing <- yieldPrev$due2trend$trended[which(yieldPrev$due2trend$YEAR == (yieldPrev$currentYear -1) )] }
 	cat(c(" \n \n \n RESPONSE \n \n ","As it is, the forecasted yield for year",yieldPrev$currentYear,"is",round(expYield$fit[1],2),"+/-",round(expYield$fit[1]-expYield$fit[2],2),"."),fill=TRUE)
 	cat(c("Confidence = 95% \n	\n CROSS-VALIDATION \n ",round(yieldPrev$CVmsRes[1],2),"as mean square error and ",round(yieldPrev$CVmsRes[2],2),"as R2."))
-	pcr_model<-pcr(OFFICIAL_YIELD ~ . ,data=yieldPrev$tableXregression,scale=TRUE,validation="LOO",ncomp=4)
-	pcr4<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=4)
-	pcr3<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=3)
-	yieldPrev$PCmodel<-pcr_model
-	cat(c("\n \n Principal Component Regression (PCR) predicted \n ",round(pcr4,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[8],2)," using 4 components \n ",round(pcr3,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[6],2)," using 3 components."))
+
+	try(scenarioAnalysis(),silent=T)
+
 if(any(names(yieldPrev) == "due2trend")){cat(c("\n \n Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
 "),fill=TRUE)}
 try(bartolomeoMod(depthing=F),silent=TRUE)
@@ -530,4 +528,12 @@ bartolomeoMod<-function(cpusa=1,depthing=T){
 	cat(c("\nBayesian Additive Regression Tree (BART) running on provided data for crop ", coltura," in ",paese," esteems the yield for ",anno, " at ",round(predCR,2),"+/-",round(errCR,2),".\n"))
 	#cat(c("=========================================================="),fill=T)
 	#cat(c("=========================================================="),fill=T)
+}
+
+scenarioAnalysis<-function(){
+	pcr_model<-pcr(OFFICIAL_YIELD ~ . ,data=yieldPrev$tableXregression,scale=TRUE,validation="LOO",ncomp=4)
+	pcr4<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=4)
+	pcr3<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=3)
+	yieldPrev$PCmodel<-pcr_model
+	cat(c("\n \n Principal Component Regression (PCR) predicted \n ",round(pcr4,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[8],2)," using 4 components \n ",round(pcr3,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[6],2)," using 3 components."))
 }

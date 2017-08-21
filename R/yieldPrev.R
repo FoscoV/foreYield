@@ -503,8 +503,9 @@ valiTrend<-function(){
 	}
 }
 
+#library(bartMachine)
 bartolomeoMod<-function(cpusa=1,depthing=T){
-	library(bartMachine)
+
 	if(cpusa>1){
 		set_bart_machine_num_cores(cpusa)
 	}

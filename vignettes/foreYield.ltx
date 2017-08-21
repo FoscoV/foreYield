@@ -250,6 +250,7 @@ I risultati basati sulla sola componente climatica determinante i raccolti sono:
 \item la previsione del modello regressivo, con relativo errore statistico
 \item il risultato della Cross Validation sui risultati di modello: errore statistico ed $R^2$
 \item la previsione ottenuta con PCR e relativo errore in Cross Validation
+\item la previsione eseguita con modello BART (\ref{bayes})
 \end{enumerate}
 \begin{figure}
 %\begin{wrapfloat}{figure}{r}{0pt}
@@ -271,7 +272,10 @@ I risultati vengono forniti all'utente in una schermata riassuntiva degli esiti,
 \subsection{Altre regressioni}\label{rifo}
 L'uso della funzione \lstinline!virgilio()! al termine dell'iter consente di procedere con una nuova elaborazione dei dati modificando riconsiderando i trend presenti (\ref{Trendo}) e la selezione del modello regressivo.
 
-\subsubsection*{Bayesian approach-EXPERIMENTAL}
+
+Qualora fosse necessario procedere ad una nuova analisi per siti o colture differenti i cui dati sono presenti negli stessi file usati nella corrente analisi, è possibile adottare l'opzione \lstinline!virgilio(reload=T)!
+
+\subsubsection*{Bayesian approach-EXPERIMENTAL}\label{bayes}
 Qualora insoddisfatti dei risultati conseguiti, prima di ricorrere al procedimento manuale, è consigliabile ricorrere alla funzione \lstinline!randModel()! questa tenta di generalizzare l'approccio \emph{Spike and Slab}. L'implementazione di questo metodo bayesano per la selezione delle variabili non richiede interazione con l'utente e pertanto la funzione consente di ottenere un risultato finale direttamente\footnote{A conclusione dell'iter principale, i dati sono già tutti raccolti ed organizzati}.
 
 Poichè l'approccio ha un fondamento stocastico, reiterando il comando \lstinline!randModel()! si ottiene un suggerimento differente.

@@ -109,7 +109,7 @@ relatedModel<-unique(prev)
 		cat(c("It seems forecasting the year",currentYear,"with data till the ",currentDecade,"th decade"),fill=TRUE)
 		cat(c("Do you want to change Decade assumption? \n "))
 		changeYD<-scan(,what="text",nmax=1)
-		while(changeYD != "y" & changeYD != "n" & length(changeYD)==0){
+		while(length(changeYD)==0 | changeYD != "y" & changeYD != "n"){
 			cat("answer y or n")
 			changeYD<-scan(,what="text",nmax=1)
 		}
@@ -501,9 +501,9 @@ valiTrend<-function(){
 	}
 }
 
-#library(bartMachine)
-bartolomeoMod<-function(cpusa=1,depthing=T){
 
+bartolomeoMod<-function(cpusa=1,depthing=T){
+	suppressMessages(library(bartMachine))
 	if(cpusa>1){
 		set_bart_machine_num_cores(cpusa)
 	}

@@ -109,7 +109,7 @@ relatedModel<-unique(prev)
 		cat(c("It seems forecasting the year",currentYear,"with data till the ",currentDecade,"th decade"),fill=TRUE)
 		cat(c("Do you want to change Decade assumption? \n "))
 		changeYD<-scan(,what="text",nmax=1)
-		while(any(c(length(changeYD)==0,changeYD != "y", changeYD != "n"))){
+		while(!any(c(length(changeYD)==0,changeYD != "y", changeYD != "n"))){
 			cat("answer y or n \n")
 			changeYD<-scan(,what="text",nmax=1)
 		}
@@ -148,7 +148,7 @@ checkTrends<-function(){
 	plot(offiPlot)
 	cat(c(" \n Do you see a trend in the data?\n	(y / n) \n "),fill=TRUE)
 	yieldPrev$flattyn<-scan(,what="text",nmax=1)
-	while(any(c(length(yieldPrev$flattyn)==0,yieldPrev$flattyn != "y" , yieldPrev$flattyn != "n"))){
+	while(!any(c(length(yieldPrev$flattyn)==0,yieldPrev$flattyn != "y" , yieldPrev$flattyn != "n"))){
 		cat("answer y or n \n ")
 		yieldPrev$flattyn<-scan(,what="text",nmax=1)}
 #	cat(c("The time serie is ",(unique(max(flatYield$YEAR))-unique(min(flatYield$YEAR))), "years long, since",unique(min(flatYield$YEAR)),"to",unique(max(flatYield$YEAR))),fill=TRUE)
@@ -222,7 +222,7 @@ sewTrends<-function(inizio,fine){
 	#continue to cut?
 	cat(c("\n Do you want to continue removing the trend in official yields"),fill=TRUE)
 	continueToCut<-scan(,what="text",nmax=1)
-	while(any(c(length(continueToCut)==0,continueToCut != "y" , continueToCut != "n"))){
+	while(!any(c(length(continueToCut)==0,continueToCut != "y" , continueToCut != "n"))){
 		cat("answer y or n \n")
 		continueToCut<-scan(,what="text",nmax=1)}
 	if(continueToCut == "y"){
@@ -253,7 +253,7 @@ breakTrends<-function(){ #this doesn't work
 	#confirm
 	cat(c("\n Are the drawn lapse correct? \n (y/n)"),fill=TRUE)
 	continCut <- scan(,what="text",nmax=1)
-	while(any(c(length(continCut)==0,continCut != "y" , continCut != "n"))){
+	while(!any(c(length(continCut)==0,continCut != "y" , continCut != "n"))){
 		cat("answer y or n")
 	continCut <- scan(,what="text",nmax=1)}
 	if(continCut == "y"){
@@ -489,7 +489,7 @@ valiTrend<-function(){
 	if(danger >= 2.6){cat(c("\n ADVICE: \n The marked trend related dynamics don't fit with the data! \n "))}
 	if(sigNO < sigW|danger >= 2.6){cat(c("Do you want to reset the trend marked and proceed again? (y/n) \n"),fill=T)
 		reBea<-scan(,what="text",nmax=1)
-		while(any(c(length(reBea)==0,reBea != "y" , reBea != "n"))){
+		while(!any(c(length(reBea)==0,reBea != "y" , reBea != "n"))){
 			cat("answer y or n")
 			reBea<-scan(,what="text",nmax=1)
 		}

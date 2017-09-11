@@ -242,7 +242,7 @@ Dei regresori sono anche riportati i coefficienti di regressione di modo da comp
 \lstinline!foreYield! offre la stima effettuata mediante regressione delle componenti principali (PCR)\cite{pls}. Questa tecnica offre una maggiore tutela dalla collinearità della regressione. Essa non richiede alcun intervento da parte dell'utente e ne sono presentati direttamente i risultati.
 La PCR può costituire una buon termine di confronto per i risultati ottenuti con il modello regressivo. Affinità tra le due previsioni suggeriscono che il modello adottato non sia afflitto da fenomeni di over-fitting o collinearità che inficino la validità previsionale.
 
-A seguito dell'indicazione del modello viene effettuata la validazione crociata\footnote{La metodologia adottata per la Cross Validation è omogeneamente Leave One Out (LOO), che meglio simula le condizioni in cui i sistemi predittivi si trovano ad operare e che quindi meglio ne rappresenta la validità} (Cross Validation)  sia dei risultati del modello sia della Regressione per Componenti Principali (PCR). Di quest'ultima,effettuata in completa autonomia dal programma, sono presentati direttamente i risultati; analogamente sono proposti i risultati del modello BART (\cite{bart}).
+A seguito dell'indicazione del modello viene effettuata la validazione crociata\footnote{La metodologia adottata per la Cross Validation è omogeneamente Leave One Out (LOO), che meglio simula le condizioni in cui i sistemi predittivi si trovano ad operare e che quindi meglio ne rappresenta la validità} (Cross Validation)  sia dei risultati del modello sia della Regressione per Componenti Principali (PCR). Di quest'ultima,effettuata in completa autonomia dal programma, sono presentati direttamente i risultati; analogamente sono proposti i risultati del modello BART (\ref{bayes}) e SVM(\ref{svm}).
 I risultati della Cross Validazione sono presentati in un grafico (riportato in figura \ref{fig:resul}) dove si hanno anche i valori aggiornati con i trend tecnologici (nel caso fossero stati rimossi).
 
 I risultati basati sulla sola componente climatica determinante i raccolti sono:
@@ -251,6 +251,7 @@ I risultati basati sulla sola componente climatica determinante i raccolti sono:
 \item il risultato della Cross Validation sui risultati di modello: errore statistico ed $R^2$
 \item la previsione ottenuta con PCR e relativo errore in Cross Validation
 \item la previsione eseguita con modello BART (\ref{bayes})
+\item la stima effettuata con \emph{Support Vector Machine}(\ref{svm})
 \end{enumerate}
 \begin{figure}
 %\begin{wrapfloat}{figure}{r}{0pt}
@@ -286,6 +287,10 @@ Un approccio differente (random tree) è usato per il modello BART\cite{bart} ch
 
 
 Tra i vantaggi di questi due approcci va segnalata la tendenza ad essere poco soggetti a collinearità.
+\subsubsection*{Support Vector Machine}\label{svm}
+L'algoritmo SVM rientra tra i metodi di \emph{machine learning}. Principalmente usato per la classificazione, ricorre ad un \emph{Kernel Trick} per portare gli elementi entro una dimensione in cui risultino meglio riconoscibili e clusterizzabili.
+
+Il risultato è equivalente\footnote{in accordo con cite(elaNetreduction) o cite(lassoreduction), SVM viene qui impiegato come surroga non supervisionata di \emph{lasso} e \emph{ridge}} ad un analisi \emph{elastic-net}. Può quindi essere considerato come un'alternativa ai risultati della PCR per tutelare l'analisi dalla collinearità.
 
 \nocite{*}
 \pagebreak

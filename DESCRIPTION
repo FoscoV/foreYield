@@ -1,11 +1,11 @@
 Package: foreYield
 Type: Package
 Title: forecasting yield result
-Version: 1.1.5
+Version: 1.1.6
 Date: 2017-08-21
 Author: Fosco Vesely
 Maintainer: Fosco Vesely <fosco@tana.it>
-Depends:tseries,forecast,ggplot2,MASS,leaps,HH,DAAG,tidyr,pls,relaimpo,trend,spikeslab
+Depends:tseries,forecast,ggplot2,MASS,leaps,HH,DAAG,tidyr,pls,relaimpo,trend,spikeslab,e1071
 Description: Using past yield and model predictors, forecast the yield resulting for the current (the last) year (simulated year). Nothing new but the interface "virgilio()" providing easy use without any (almost) knowledge of R
 License: GPL2
 Suggests: R.rsp,bartMachine

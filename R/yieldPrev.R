@@ -412,6 +412,7 @@ responseYield<-function(){
 if(any(names(yieldPrev) == "due2trend")){cat(c("\n \n Due to the marked trends, the forecasted has to be corrected with ",round(trendMissing,2)," resulting, so, as ",round(expYield$fit[1]+trendMissing,2),". \n
 "),fill=TRUE)}
 try(bartolomeoMod(depthing=F),silent=TRUE)
+try(supVecMac(),silent=T)
 cat(c("	\n
 	TimeSeries statistical analysis over OFFICIAL_YIELD would bet on ",round(forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1],2)," +/- ",round((forecast(ets(yieldPrev$actualYield[,2]),h=1)$upper[2]-forecast(ets(yieldPrev$actualYield[,2]),h=1)$mean[1]),2),"."))
 
@@ -501,7 +502,7 @@ valiTrend<-function(){
 	}
 }
 
-
+#bayesian variance scomposition
 bartolomeoMod<-function(cpusa=1,depthing=T){
 	suppressMessages(library(bartMachine))
 	if(cpusa>1){
@@ -530,10 +531,18 @@ bartolomeoMod<-function(cpusa=1,depthing=T){
 	#cat(c("=========================================================="),fill=T)
 }
 
+#splitted to get stabler the work
 scenarioAnalysis<-function(){
 	pcr_model<-pcr(OFFICIAL_YIELD ~ . ,data=yieldPrev$tableXregression,scale=TRUE,validation="LOO",ncomp=4)
 	pcr4<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=4)
 	pcr3<-predict(pcr_model,newdata=subset(yieldPrev$relatedModel, yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear),ncomp=3)
 	yieldPrev$PCmodel<-pcr_model
 	cat(c("\n \n Principal Component Regression (PCR) predicted \n ",round(pcr4,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[8],2)," using 4 components \n ",round(pcr3,2),"+/-",round(RMSEP(yieldPrev$PCmodel)$val[6],2)," using 3 components."))
+}
+
+#Support Vector Machine (instead of lasso and/or elastic-net)
+supVecMac<-function(){
+	vectorMachineModel<-svm(as.matrix(yieldPrev$tableXregression[,-c(which(names(yieldPrev$tableXregression)=="YEAR"),which(names(yieldPrev$tableXregression)=="OFFICIAL_YIELD"))]),yieldPrev$tableXregression[,which(names(yieldPrev$tableXregression)=="OFFICIAL_YIELD")])
+	svmYield<-predict(vectorMachineModel,subset(yieldPrev$relatedModel[,-which(names(yieldPrev$tableXregression)=="YEAR")], yieldPrev$relatedModel$YEAR  == yieldPrev$currentYear))
+	cat(c("\n Support Vector Machine predicted ",round(svmYield,2),"."))
 }

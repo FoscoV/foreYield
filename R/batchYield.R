@@ -7,7 +7,14 @@
 importYield<-function(offiData,simuData,allData,crp,cnt,dec){
 	if(missing(allData)){
 		write.table(gsub(gsub(scan(file=offiData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjOffi.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
-		write.table(gsub(gsub(scan(file=simuData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjSimu.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+		if(basename(simuData)=="PredictoIndicis.txt"){
+				predInd<-read.csv(simuData)
+				predInd$INDICATOR_VALUE<-as.numeric(as.character(predInd$INDICATOR_VALUE))
+				predIndL<-spread(predInd,INDICATOR_CODE,INDICATOR_VALUE)
+				write.csv(predIndL,file="adjSimu.csv",row.names=FALSE)
+			}else{
+				write.table(gsub(gsub(scan(file=simuData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjSimu.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
+			}
 	}else{write.table(gsub(gsub(scan(file=allData,what="text",sep="\n"),pattern='"',replacement='',fixed=TRUE),pattern=";",replacement=","),file="adjDtb.csv",quote=FALSE,row.names=FALSE,col.names=FALSE)
 		longData<-read.csv("adjDtb.csv")
 		library(tidyr)

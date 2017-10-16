@@ -26,6 +26,8 @@ configure<-function(depth="base"){
 			if(basename(simuData)=="PredictoIndicis.txt"){
 				predInd<-read.csv(simuData)
 				predInd$INDICATOR_VALUE<-as.numeric(as.character(predInd$INDICATOR_VALUE))
+				predInd$STAT_CROP_NO[which(predInd$STAT_CROP_NO==8)]<-"indica"
+				predInd$STAT_CROP_NO[which(predInd$STAT_CROP_NO==9)]<-"japonica"
 				predIndL<-spread(predInd,INDICATOR_CODE,INDICATOR_VALUE)
 				write.csv(predIndL,file="adjSimu.csv",row.names=FALSE)
 			}else{

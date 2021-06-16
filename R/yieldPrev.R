@@ -84,6 +84,7 @@ relatedModel<-unique(prev)
 
 	if(any(names(actualYield)=="NUTS_CODE")){
 		#choice of country
+		actualYield$NUTS_CODE<-as.factor(actualYield$NUTS_CODE)
 		cat(c("The following countries are provided in the DataBases:\n","OFFICIAL:",levels(actualYield$NUTS_CODE),"(case sensitive) \n"),fill=TRUE)
 		cat(" OFFICIAL COUNTRY:")
 		countryO<-scan(,what="text",nmax=1)

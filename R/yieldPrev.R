@@ -93,6 +93,7 @@ relatedModel<-unique(prev)
 		actualYield<-subset(actualYield,actualYield$NUTS_CODE == countryO)
 	}
 	if(any(names(prev)=="NUTS_CODE")){
+		prev$NUTS_CODE<-as.factor(prev$NUTS_CODE)
 		cat(c("The following countries are provided in the DataBases: \n SIMULATION:",levels(prev$NUTS_CODE)," \n "))
 		countryS<-scan(,what="text",nmax=1)
 		while(any(levels(prev$NUTS_CODE) == countryS) == FALSE){cat("point an existing one \n ")
